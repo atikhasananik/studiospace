@@ -17,6 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const routes = [
   { href: "/", label: "Home" },
@@ -110,9 +111,13 @@ export function Navbar() {
             Live Studios
           </span>
 
+          {/* Theme toggle (desktop — mobile version lives in the sheet header) */}
+          <ThemeToggle className="hidden md:inline-flex" />
+
           {/* Desktop auth */}
           <div className="hidden items-center gap-1.5 md:flex">
             <Button
+              nativeButton={false}
               variant="ghost"
               render={<Link href="/login" />}
               className="text-muted-foreground hover:text-foreground"
@@ -120,6 +125,7 @@ export function Navbar() {
               Log In
             </Button>
             <Button
+              nativeButton={false}
               render={<Link href="/register" />}
               className="rounded-xl bg-primary px-5 font-semibold text-primary-foreground shadow-lg shadow-orange-500/10 transition-all hover:bg-primary/90 active:scale-95"
             >
@@ -146,10 +152,11 @@ export function Navbar() {
               side="right"
               className="w-3/4 gap-0 border-l border-border bg-background p-0 text-foreground sm:max-w-sm"
             >
-              <SheetHeader className="border-b border-border p-4">
+              <SheetHeader className="flex-row items-center justify-between border-b border-border p-4">
                 <SheetTitle className="p-0">
                   <Logo />
                 </SheetTitle>
+                <ThemeToggle />
               </SheetHeader>
 
               <nav
@@ -161,6 +168,7 @@ export function Navbar() {
                   return (
                     <SheetClose
                       key={route.href}
+                      nativeButton={false}
                       render={<Link href={route.href} />}
                       aria-current={active ? "page" : undefined}
                       className={cn(
@@ -186,6 +194,7 @@ export function Navbar() {
 
               <SheetFooter className="mt-auto flex flex-col gap-2 border-t border-border p-4">
                 <Button
+                  nativeButton={false}
                   variant="outline"
                   render={<Link href="/login" />}
                   className="w-full rounded-xl border-border text-foreground hover:bg-secondary"
@@ -193,6 +202,7 @@ export function Navbar() {
                   Log In
                 </Button>
                 <Button
+                  nativeButton={false}
                   render={<Link href="/register" />}
                   className="w-full rounded-xl bg-primary font-semibold text-primary-foreground shadow-lg shadow-orange-500/10 transition-all hover:bg-primary/90 active:scale-95"
                 >

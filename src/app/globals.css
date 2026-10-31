@@ -2,6 +2,19 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Class-based dark strategy — dark/light is driven by the .dark / .light
+   class set on <html> by next-themes, NOT by the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Native controls & scrollbars follow the active theme */
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
 /* ==========================================================================
    StudioSpace brand tokens — source of truth: color_palette_system.md
    Dark Mode (Void Obsidian) is the default base. Light toggles via .light
