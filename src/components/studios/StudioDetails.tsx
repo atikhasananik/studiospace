@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Star } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getSingleData } from "../data/getData";
+import { StudioImageCarousel } from "./StudioImageCarousel";
 
 export async function StudioDetails({ id }: { id: string }) {
   const studio = await getSingleData(id);
@@ -22,24 +22,7 @@ export async function StudioDetails({ id }: { id: string }) {
         </Button>
 
         <article className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
-            {studio.imageUrl ? (
-              <Image
-                src={studio.imageUrl}
-                alt={studio.title}
-                fill
-                priority
-                sizes="(min-width:1024px) 64rem, 100vw"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center bg-gradient-to-br from-secondary to-background">
-                <span className="font-heading text-4xl font-bold text-muted-foreground/50">
-                  StudioSpace
-                </span>
-              </div>
-            )}
-          </div>
+          <StudioImageCarousel imageUrl={studio.imageUrl} title={studio.title} />
 
           <div className="grid gap-8 p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-9">
             <div className="space-y-6">
@@ -121,6 +104,14 @@ export async function StudioDetails({ id }: { id: string }) {
                   </span>
                 </p>
               </div>
+              <Button
+                nativeButton={false}
+                render={<Link href="/login" />}
+                className="mt-5 h-11 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/15 transition-all hover:bg-primary/90 hover:shadow-primary/25"
+              >
+                <CalendarDays aria-hidden="true" />
+                Book Now
+              </Button>
             </aside>
           </div>
         </article>

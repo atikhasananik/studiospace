@@ -113,7 +113,7 @@ const FeaturedSection = async () => {
                 </p>
                 <Button
                   nativeButton={false}
-                  render={<Link href="/studios" />}
+                  render={<Link href={`/studios/${studio._id}` }/>}
                   variant="outline"
                   className="shrink-0 rounded-lg border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
                 >

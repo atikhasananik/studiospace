@@ -10,4 +10,5 @@ export interface IStudio {
   amenities: string[]
   detailedOverview: string
   rating: number
+  
 }
