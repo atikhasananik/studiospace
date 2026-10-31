@@ -3,6 +3,7 @@ import { Hero } from "@/components/home/hero/Hero";
 import FeaturedSection from "@/components/home/feature/FeaturedSection";
 import Category from "@/components/home/category/Category";
 import HowBookingWork from "@/components/home/howBookingWork/HowBookingWork";
+import HostGuarantee from "@/components/home/guarantee/HostGuarantee";
 
 const HomePage = () => {
   return (
@@ -11,6 +12,7 @@ const HomePage = () => {
       <FeaturedSection />
       <Category />
       <HowBookingWork />
+      <HostGuarantee />
     </>
   );
 };
