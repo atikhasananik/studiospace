@@ -1,26 +1,130 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* ==========================================================================
+   StudioSpace brand tokens — source of truth: color_palette_system.md
+   Dark Mode (Void Obsidian) is the default base. Light toggles via .light
+   on <html> (kept in layout.tsx) or [data-theme="light"].
+   Format: space-separated HSL channels (no hsl() wrapper).
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 228 26% 4%; /* #090A0F Void Obsidian */
+  --foreground: 0 0% 100%; /* #FFFFFF Pure White */
+
+  --card: 225 25% 10%; /* #131620 Elevated Dark Slate */
+  --card-foreground: 0 0% 100%;
+
+  --popover: 225 25% 10%;
+  --popover-foreground: 0 0% 100%;
+
+  --primary: 18 100% 50%; /* #FF4D00 Electric Amber */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 224 22% 16%; /* #1B202E Dark Surface Muted */
+  --secondary-foreground: 215 20% 65%;
+
+  --muted: 224 22% 16%;
+  --muted-foreground: 215 20% 65%; /* #94A3B8 Slate 400 */
+
+  --accent: 182 100% 50%; /* #00F2FE Neon Pulse Cyan */
+  --accent-foreground: 228 26% 4%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 223 22% 18%; /* #232838 Border Subtle */
+  --input: 223 22% 18%;
+  --ring: 18 100% 50%; /* Electric Amber Focus Ring */
+
+  --radius: 0.75rem; /* rounded-xl standard */
 }
 
+.light,
+[data-theme="light"] {
+  --background: 210 40% 98%; /* #F8FAFC Studio Light Base */
+  --foreground: 222 47% 11%; /* #0F172A Slate 900 */
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --primary: 18 100% 50%; /* #FF4D00 Electric Amber */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 215 25% 27%;
+
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%; /* #64748B Slate 600 */
+
+  --accent: 199 89% 48%; /* #0284C7 Deep Pulse Blue */
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 214 32% 91%; /* #E2E8F0 Slate 200 */
+  --input: 214 32% 91%;
+  --ring: 18 100% 50%;
+}
+
+/* ==========================================================================
+   Tailwind v4 theme bridge — maps brand tokens to utilities
+   (bg-background, text-primary, border-border, font-heading, ...)
+   shadcn/tailwind.css provides animations/variants only; colors come from
+   this block. `inline` so utilities reference the vars at runtime.
+   ========================================================================== */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: hsl(var(--background));
+  --color-background-foreground: hsl(var(--foreground));
+
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-syne), var(--font-geist-sans), ui-sans-serif,
+    sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
 }
