@@ -13,5 +13,5 @@ export default async function StudioPage({ params }: StudioPageProps) {
 
   if (!studio) notFound();
 
-  return <StudioDetails studio={studio} />;
+  return <StudioDetails id={studio._id} />;
 }

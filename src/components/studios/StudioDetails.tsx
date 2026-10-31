@@ -2,13 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Star } from "lucide-react";
 
-import type { IStudio } from "@/components/type/studio.type";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getSingleData } from "../data/getData";
 
-export function StudioDetails({ studio }: { studio: IStudio }) {
+export async function StudioDetails({ id }: { id: string }) {
+  const studio = await getSingleData(id);
   return (
-    <section className="bg-background py-10 md:py-14">
+    <section className="bg-background py-15 md:py-20">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <Button
           nativeButton={false}
@@ -83,7 +84,7 @@ export function StudioDetails({ studio }: { studio: IStudio }) {
                     Amenities
                   </h2>
                   <ul className="mt-3 flex flex-wrap gap-2">
-                    {studio.amenities.map((amenity) => (
+                    {studio.amenities.map((amenity: string) => (
                       <li key={amenity}>
                         <Badge
                           variant="outline"

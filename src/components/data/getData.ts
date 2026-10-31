@@ -77,6 +77,14 @@ export const getAllData = async (
   }
 }
 
+
+export const getSingleData = async (id : string) => {
+  const res = await fetch(`${API_BASE}/singlestudio/${id}`)
+  const data = await res.json()
+  return data
+}
+
+
 export const getStudioById = async (id: string): Promise<IStudio | null> => {
   const studios = await getAllData();
   return studios?.find((studio) => studio._id === id) ?? null;
