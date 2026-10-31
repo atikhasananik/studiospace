@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { MenuIcon } from "lucide-react";
 import { cn } from "cn";
 
@@ -67,8 +68,25 @@ function LiveDot() {
 export function Navbar() {
   const isActive = useIsActive();
 
+  // Fixed navbar floats over the hero — transparent at the top of the page,
+  // gains its frosted background as soon as the user scrolls.
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.06)] backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-40 w-full border-b transition-all duration-300",
+        scrolled
+          ? "border-border bg-background/80 shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.06)] backdrop-blur-md supports-[backdrop-filter]:bg-background/60"
+          : "border-transparent bg-transparent",
+      )}
+    >
       <div className="relative mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* ── Left: brand ─────────────────────────────────────────────── */}
         <Logo className="shrink-0" />

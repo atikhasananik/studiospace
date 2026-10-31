@@ -84,6 +84,29 @@ html.light {
   --ring: 18 100% 50%;
 }
 
+/* The hero intentionally keeps its dark StudioSpace palette in either theme. */
+.hero-dark {
+  --background: 228 26% 4%;
+  --foreground: 0 0% 100%;
+  --card: 225 25% 10%;
+  --card-foreground: 0 0% 100%;
+  --popover: 225 25% 10%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 18 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 224 22% 16%;
+  --secondary-foreground: 215 20% 65%;
+  --muted: 224 22% 16%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 182 100% 50%;
+  --accent-foreground: 228 26% 4%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 223 22% 18%;
+  --input: 223 22% 18%;
+  --ring: 18 100% 50%;
+}
+
 /* ==========================================================================
    Tailwind v4 theme bridge — maps brand tokens to utilities
    (bg-background, text-primary, border-border, font-heading, ...)
@@ -93,7 +116,6 @@ html.light {
 @theme inline {
   --color-background: hsl(var(--background));
   --color-background-foreground: hsl(var(--foreground));
-
   --color-foreground: hsl(var(--foreground));
 
   --color-card: hsl(var(--card));

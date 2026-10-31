@@ -19,7 +19,6 @@ type Slide = {
   image: string;
   alt: string;
   eyebrow: string;
-  title: React.ReactNode;
   description: string;
   /** Hero copy re-animates whenever this changes */
   key: number;
@@ -34,11 +33,6 @@ const slides: Slide[] = [
       "https://images.unsplash.com/photo-1497015289639-54688650d173?auto=format&fit=crop&w=2400&q=85",
     alt: "Professional cinema camera and softbox lighting on a film set",
     eyebrow: "Film & Video Stages",
-    title: (
-      <>
-        Roll Camera. <span className="text-primary">Create Magic.</span>
-      </>
-    ),
     description:
       "Cinema-grade gear, lit stages, zero setup — book by the hour and shoot the same day.",
   },
@@ -48,11 +42,6 @@ const slides: Slide[] = [
       "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=2400&q=85",
     alt: "Music production control room with mixing console and guitars",
     eyebrow: "Recording Studios",
-    title: (
-      <>
-        Press Record. <span className="text-primary">Sound Iconic.</span>
-      </>
-    ),
     description:
       "Pro consoles, acoustically treated rooms, and signal chains built for radio-ready releases.",
   },
@@ -62,11 +51,6 @@ const slides: Slide[] = [
       "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=2400&q=85",
     alt: "Broadcast microphone on a boom arm in a dark podcast studio",
     eyebrow: "Podcast Suites",
-    title: (
-      <>
-        Go Live. <span className="text-primary">Sound Pro.</span>
-      </>
-    ),
     description:
       "Broadcast mics, silent rooms, one-take setup — walk in, hit record, and publish today.",
   },
@@ -74,8 +58,10 @@ const slides: Slide[] = [
 
 const AUTOPLAY_MS = 6000;
 
-/** Height shared by the hero container — one-line tweaks */
-const HERO_HEIGHT = "h-[70svh] max-h-[700px] min-h-[540px]";
+/** Height shared by the hero container — one-line tweaks.
+ *  100svh = full viewport on every device (mobile browser chrome included).
+ *  The navbar overlays the hero, so no offset is needed. */
+const HERO_HEIGHT = "h-svh min-h-[540px]";
 
 /** Cyan pulse dot — brand "live" indicator (#00F2FE) */
 function LiveDot() {
@@ -119,7 +105,7 @@ export function Hero() {
   return (
     <section
       aria-label="Featured studios"
-      className="relative w-full overflow-hidden bg-background"
+      className="hero-dark relative w-full overflow-hidden bg-background"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -142,7 +128,12 @@ export function Hero() {
                     fill
                     sizes="100vw"
                     priority={i === 0}
-                    className="object-cover object-center"
+                    className={cn(
+                      "object-cover object-center motion-safe:transition-transform motion-safe:ease-linear",
+                      // Cinematic slow zoom on the active slide (ken-burns)
+                      "motion-safe:duration-[6000ms]",
+                      i === active ? "scale-105" : "scale-100",
+                    )}
                   />
                 </div>
               </CarouselItem>
@@ -161,30 +152,34 @@ export function Hero() {
 
         {/* ── Theme-aware wash — strictly INSIDE the hero box; the image
              stays visible to the hero's edge so the filter visibly stops
-             at the section boundary. ─────────────────────────────────── */}
+             at the section boundary. ── */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-background/70 dark:bg-background/50"
+          className="pointer-events-none absolute inset-0 bg-background/50"
         />
 
         {/* ── Centered hero copy — re-animates on every slide change ─── */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div key={slide.key} className="mx-auto max-w-3xl space-y-5 text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-card/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-700">
-                <LiveDot />
-                {slide.eyebrow}
-              </span>
-
-              <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground text-balance md:text-5xl lg:text-6xl animate-in fade-in slide-in-from-bottom-4 fill-mode-both delay-75 duration-700">
-                {slide.title}
+            <div className="mx-auto max-w-3xl space-y-5 text-center">
+              {/* Static headline — matches the reference design. The slider
+                  keeps rotating imagery + eyebrow + description below it. */}
+              <h1 className="font-heading text-4xl font-extrabold tracking-tight text-foreground text-balance md:text-5xl lg:text-6xl">
+                High-End Venues.{" "}
+                <span className="text-primary">Create Freely.</span>
               </h1>
 
-              <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground text-balance md:text-lg animate-in fade-in slide-in-from-bottom-4 fill-mode-both delay-150 duration-700">
-                {slide.description}
-              </p>
+              <div key={slide.key} className="space-y-5">
+                <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-card/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-700">
+                  <LiveDot />
+                  {slide.eyebrow}
+                </span>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 fill-mode-both delay-200 duration-700">
+                <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground text-balance md:text-lg animate-in fade-in slide-in-from-bottom-4 fill-mode-both delay-75 duration-700">
+                  {slide.description}
+                </p>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 fill-mode-both delay-150 duration-700">
                 <Button
                   nativeButton={false}
                   render={<Link href="/studios" />}
@@ -200,6 +195,7 @@ export function Hero() {
                 >
                   Host Your Space
                 </Button>
+                </div>
               </div>
             </div>
           </div>

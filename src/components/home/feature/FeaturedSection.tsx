@@ -40,7 +40,7 @@ const FeaturedSection = async () => {
             id="featured-studios-heading"
             className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground text-balance md:text-4xl"
           >
-            Top Rated. <span className="text-primary">Ready to Roll.</span>
+            Top Rated <span className="text-primary">Studio Spaces</span>
           </h2>
 
           <p className="mt-4 text-base leading-relaxed text-muted-foreground text-balance md:text-lg">
