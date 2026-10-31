@@ -1,13 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import {
+  useState,
+  type ChangeEventHandler,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import {
   ArrowLeft,
   ArrowRight,
   AudioLines,
+  Check,
+  Circle,
   Eye,
   EyeOff,
+  Image as ImageIcon,
   LockKeyhole,
   Mail,
   ShieldCheck,
@@ -159,6 +168,10 @@ function Field({
   type = "text",
   placeholder,
   autoComplete,
+  value,
+  onChange,
+  invalid,
+  required = true,
   trailing,
 }: {
   id: string;
@@ -167,6 +180,10 @@ function Field({
   type?: string;
   placeholder: string;
   autoComplete?: string;
+  value?: string;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  invalid?: boolean;
+  required?: boolean;
   trailing?: ReactNode;
 }) {
   return (
@@ -184,8 +201,11 @@ function Field({
           type={type}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          required
-          className="h-12 rounded-xl border-border bg-background/70 pl-11 pr-12 text-sm placeholder:text-muted-foreground/75 focus-visible:bg-background"
+          value={value}
+          onChange={onChange}
+          required={required}
+          aria-invalid={invalid || undefined}
+          className="h-12 rounded-xl border-border bg-background/70 pl-11 pr-12 text-sm placeholder:text-muted-foreground/75 focus-visible:bg-background aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20"
         />
         {trailing}
       </div>
@@ -194,15 +214,42 @@ function Field({
 }
 
 export function AuthExperience({ mode }: { mode: AuthMode }) {
-  const [notice, setNotice] = useState("");
+  const router = useRouter();
+  const [notice, setNotice] = useState<{
+    message: string;
+    kind: "error" | "info";
+  } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [registerAttempted, setRegisterAttempted] = useState(false);
   const text = copy[mode];
+  const passwordRequirements = [
+    { label: "At least 6 characters", valid: password.length >= 6 },
+    { label: "One uppercase letter", valid: /[A-Z]/.test(password) },
+    { label: "One lowercase letter", valid: /[a-z]/.test(password) },
+  ];
 
   function showPreviewNotice(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
-    setNotice(
-      "This is a UI preview. Connect an authentication provider to continue.",
-    );
+    if (mode === "register") {
+      setRegisterAttempted(true);
+      if (passwordRequirements.some((requirement) => !requirement.valid)) {
+        setNotice({
+          kind: "error",
+          message: "Please meet all password requirements before continuing.",
+        });
+        return;
+      }
+
+      router.push("/login");
+      return;
+    }
+
+    setNotice({
+      kind: "info",
+      message:
+        "This is a UI preview. Connect an authentication provider to continue.",
+    });
   }
 
   return (
@@ -258,7 +305,12 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setNotice("Google sign-in is not connected yet.")}
+                  onClick={() =>
+                    setNotice({
+                      kind: "info",
+                      message: "Google sign-in is not connected yet.",
+                    })
+                  }
                   className="h-12 w-full gap-3 rounded-xl border-border bg-background/70 font-semibold text-foreground hover:bg-secondary"
                 >
                   <GoogleMark />
@@ -293,33 +345,89 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
                 autoComplete="email"
               />
 
-              {mode !== "forgot-password" && (
+              {mode === "register" && (
                 <Field
-                  id="password"
-                  label="Password"
-                  icon={<LockKeyhole className="size-4" />}
-                  type={showPassword ? "text" : "password"}
-                  placeholder={
-                    mode === "register" ? "Create a password" : "Enter your password"
-                  }
-                  autoComplete={
-                    mode === "register" ? "new-password" : "current-password"
-                  }
-                  trailing={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((visible) => !visible)}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                      className="absolute inset-y-0 right-3.5 flex items-center text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="size-4" />
-                      ) : (
-                        <Eye className="size-4" />
-                      )}
-                    </button>
-                  }
+                  id="photoUrl"
+                  label="Photo URL"
+                  icon={<ImageIcon className="size-4" />}
+                  type="url"
+                  placeholder="https://example.com/your-photo.jpg"
+                  autoComplete="url"
                 />
+              )}
+
+              {mode !== "forgot-password" && (
+                <>
+                  <Field
+                    id="password"
+                    label="Password"
+                    icon={<LockKeyhole className="size-4" />}
+                    type={showPassword ? "text" : "password"}
+                    placeholder={
+                      mode === "register"
+                        ? "Create a password"
+                        : "Enter your password"
+                    }
+                    autoComplete={
+                      mode === "register" ? "new-password" : "current-password"
+                    }
+                    value={mode === "register" ? password : undefined}
+                    required={mode !== "register"}
+                    onChange={
+                      mode === "register"
+                        ? (event) => {
+                            setPassword(event.currentTarget.value);
+                            setNotice(null);
+                          }
+                        : undefined
+                    }
+                    invalid={
+                      mode === "register" &&
+                      registerAttempted &&
+                      passwordRequirements.some((requirement) => !requirement.valid)
+                    }
+                    trailing={
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((visible) => !visible)}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        className="absolute inset-y-0 right-3.5 flex items-center text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="size-4" />
+                        ) : (
+                          <Eye className="size-4" />
+                        )}
+                      </button>
+                    }
+                  />
+                  {mode === "register" && (
+                    <ul
+                      aria-label="Password requirements"
+                      className="mt-2 grid gap-1.5 text-xs sm:grid-cols-2"
+                    >
+                      {passwordRequirements.map((requirement) => (
+                        <li
+                          key={requirement.label}
+                          className={
+                            requirement.valid
+                              ? "flex items-center gap-1.5 text-accent"
+                              : registerAttempted
+                                ? "flex items-center gap-1.5 text-destructive"
+                                : "flex items-center gap-1.5 text-muted-foreground"
+                          }
+                        >
+                          {requirement.valid ? (
+                            <Check className="size-3.5" />
+                          ) : (
+                            <Circle className="size-3.5" />
+                          )}
+                          {requirement.label}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
               )}
 
               {mode === "login" && (
@@ -343,12 +451,18 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
 
               {notice && (
                 <Alert
-                  variant="destructive"
-                  className="rounded-xl border-destructive/25 bg-destructive/5 px-4 py-3 text-sm"
+                  variant={notice.kind === "error" ? "destructive" : "default"}
+                  className={
+                    notice.kind === "error"
+                      ? "rounded-xl border-destructive/25 bg-destructive/5 px-4 py-3 text-sm"
+                      : "rounded-xl border-primary/25 bg-primary/5 px-4 py-3 text-sm"
+                  }
                 >
-                  <AlertTitle className="font-semibold">Unable to continue</AlertTitle>
+                  <AlertTitle className="font-semibold">
+                    {notice.kind === "error" ? "Unable to continue" : "UI preview"}
+                  </AlertTitle>
                   <AlertDescription className="mt-1 leading-5">
-                    {notice}
+                    {notice.message}
                   </AlertDescription>
                 </Alert>
               )}
