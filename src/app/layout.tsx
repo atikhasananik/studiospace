@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Syne } from "next/font/google";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/common/navbar/navbar";
+import { Footer } from "@/components/common/footer/Footer";
+import { BackToTop } from "@/components/back-to-top/BackToTop";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -45,6 +47,8 @@ export default function RootLayout({
         <ThemeProvider>
           <Navbar />
           <main className="flex-1 flex flex-col">{children}</main>
+          <Footer />
+          <BackToTop />
         </ThemeProvider>
       </body>
     </html>

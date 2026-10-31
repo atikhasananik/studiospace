@@ -108,7 +108,7 @@ const Category = async () => {
             return (
               <Link
                 key={category.name}
-                href={`/studios?category=${encodeURIComponent(category.param)}`}
+                href={`/studios?category=${category.param}`}
                 className="group flex flex-col gap-6 rounded-xl border border-border bg-transparent p-6 shadow-sm transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10 hover:ring-1 hover:ring-primary/30"
               >
                 {/* Index + arrow */}

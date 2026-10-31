@@ -44,3 +44,40 @@ export const getTopRatedData = async (): Promise<IStudio[] | null> => {
     return null
   }
 }
+
+
+export const getAllData = async (
+  category?: string,
+): Promise<IStudio[] | null> => {
+  try {
+    const query = category
+      ? `?category=${encodeURIComponent(category)}`
+      : ""
+    const res = await fetch(`${API_BASE}/getalldata${query}`)
+
+    if (!res.ok) {
+      console.warn(`getAllData: API responded with ${res.status}`)
+      return null
+    }
+
+    const data: unknown = await res.json()
+
+    if (!Array.isArray(data)) {
+      console.warn("getAllData: unexpected payload shape")
+      return null
+    }
+
+    return data as IStudio[]
+  } catch (err) {
+    console.warn(
+      "getAllData: fetch failed —",
+      err instanceof Error ? err.message : err,
+    )
+    return null
+  }
+}
+
+export const getStudioById = async (id: string): Promise<IStudio | null> => {
+  const studios = await getAllData();
+  return studios?.find((studio) => studio._id === id) ?? null;
+};

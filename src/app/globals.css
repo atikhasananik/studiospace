@@ -15,6 +15,10 @@ html.light {
   color-scheme: light;
 }
 
+html.light .site-navbar {
+  background-color: hsl(0 0% 100%) !important;
+}
+
 /* ==========================================================================
    StudioSpace brand tokens — source of truth: color_palette_system.md
    Dark Mode (Void Obsidian) is the default base. Light toggles via .light

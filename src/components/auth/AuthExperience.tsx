@@ -28,6 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signUp } from "@/lib/auth-client";
 
 type AuthMode = "login" | "register" | "forgot-password";
 
@@ -154,8 +155,8 @@ function StudioPanel({ mode }: { mode: AuthMode }) {
       </div>
 
       <div className="relative z-10 flex items-center gap-2 text-sm text-muted-foreground">
-        <ShieldCheck className="size-4 text-accent" />
-        A better space for every big idea.
+        <ShieldCheck className="size-4 text-accent" />A better space for every
+        big idea.
       </div>
     </aside>
   );
@@ -214,7 +215,7 @@ function Field({
 }
 
 export function AuthExperience({ mode }: { mode: AuthMode }) {
-  const router = useRouter();
+  // const router = useRouter();
   const [notice, setNotice] = useState<{
     message: string;
     kind: "error" | "info";
@@ -229,7 +230,7 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
     { label: "One lowercase letter", valid: /[a-z]/.test(password) },
   ];
 
-  function showPreviewNotice(event?: FormEvent<HTMLFormElement>) {
+  async function showPreviewNotice(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     if (mode === "register") {
       setRegisterAttempted(true);
@@ -241,7 +242,20 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
         return;
       }
 
-      router.push("/login");
+      const formData = new FormData(event?.currentTarget);
+      const data = Object.fromEntries(formData.entries());
+      console.log(data);
+
+      const { data: resData, error } = await signUp.email({
+        name: data.name as string, // required, The name of the user.
+        email: data.email as string, // required, The email address of the user.
+        password: data.password as string, // required, The password of the user. It should be at least 8 characters long and max 128 by default.
+        image: data.photoUrl as string, // An optional profile image of the user.
+        // An optional URL to redirect to after the user signs up.
+      });
+
+      console.log(resData, error, " after submiting");
+
       return;
     }
 
@@ -384,13 +398,17 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
                     invalid={
                       mode === "register" &&
                       registerAttempted &&
-                      passwordRequirements.some((requirement) => !requirement.valid)
+                      passwordRequirements.some(
+                        (requirement) => !requirement.valid,
+                      )
                     }
                     trailing={
                       <button
                         type="button"
                         onClick={() => setShowPassword((visible) => !visible)}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
                         className="absolute inset-y-0 right-3.5 flex items-center text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {showPassword ? (
@@ -440,12 +458,9 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
                     />
                     Remember me
                   </label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
-                  >
+                  <button className="text-sm font-semibold text-primary transition-colors hover:text-primary/80">
                     Forgot password?
-                  </Link>
+                  </button>
                 </div>
               )}
 
@@ -459,7 +474,9 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
                   }
                 >
                   <AlertTitle className="font-semibold">
-                    {notice.kind === "error" ? "Unable to continue" : "UI preview"}
+                    {notice.kind === "error"
+                      ? "Unable to continue"
+                      : "UI preview"}
                   </AlertTitle>
                   <AlertDescription className="mt-1 leading-5">
                     {notice.message}
