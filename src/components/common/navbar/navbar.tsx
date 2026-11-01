@@ -53,7 +53,7 @@ const routes = [
 const accountLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/add-studio", label: "Add New Studio", icon: Plus },
-  { href: "/my-studios", label: "My Studio Listings", icon: Store },
+  { href: "/my-listings", label: "My Studio Listings", icon: Store },
   { href: "/my-bookings", label: "My Bookings", icon: CalendarDays },
 ] as const;
 

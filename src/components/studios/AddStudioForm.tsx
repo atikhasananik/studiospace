@@ -123,9 +123,10 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
     );
 
     data.amenities = amenities;
-    console.log(data);
+    data.ownerEmail = user.email;
 
     const res = await postStudioData(data);
+    console.log(data)
     console.log(res);
     if (!res.acknowledged) {
       console.log("Failed to submit studio data:");

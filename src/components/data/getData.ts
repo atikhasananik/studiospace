@@ -89,3 +89,28 @@ export const getStudioById = async (id: string): Promise<IStudio | null> => {
   const studios = await getAllData();
   return studios?.find((studio) => studio._id === id) ?? null;
 };
+
+
+
+ export const getMyListingsData = async (ownerEmail: string): Promise<IStudio[] | IStudio | null> => {
+  try {
+    const res = await fetch(`${API_BASE}/getmylistings/${encodeURIComponent(ownerEmail)}`);
+
+    if (!res.ok) {
+      console.warn(`getMyListingsData: API responded with ${res.status}`);
+      return null;
+    }
+
+    const data: unknown = await res.json();
+
+
+
+    return data as IStudio[] | IStudio;
+  } catch (err) {
+    console.warn(
+      "getMyListingsData: fetch failed —",
+      err instanceof Error ? err.message : err,
+    );
+    return null;
+  }
+}
