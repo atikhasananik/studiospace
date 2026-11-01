@@ -23,55 +23,55 @@ type Step = {
 const STEPS: Step[] = [
   {
     index: "01",
-    title: "Discover Spaces",
+    title: "Discover your space",
     description:
-      "Search verified studios near you and compare real photos, gear lists, and rates before you commit.",
+      "Explore creative studios for photography, film, podcasts, music, and the work you want to make.",
     icon: Search,
     details: [
-      "Live availability badges on every listing",
-      "Verified reviews and ratings from real shoots",
-      "Filter by category, gear, and price",
+      "Browse spaces by creative category",
+      "See studio photos and descriptions",
+      "Find a setting that fits your project",
     ],
-    meta: "≈ 2 min",
+    meta: "Start exploring",
   },
   {
     index: "02",
-    title: "Select Shoot Hours",
+    title: "Compare the details",
     description:
-      "Pick your slot on a live hourly calendar — book an hour, a half-day, or lock in the full day.",
+      "Review the information each host provides to see whether a studio suits your session.",
     icon: CalendarClock,
     details: [
-      "Real-time hourly and half-day blocks",
-      "Instant price breakdown as you select",
-      "See blackout dates before checkout",
+      "Check location and listed equipment",
+      "Review amenities and studio details",
+      "Compare rates and booking information",
     ],
-    meta: "≈ 3 min",
+    meta: "Find your fit",
   },
   {
     index: "03",
-    title: "Book Instantly",
+    title: "Choose your session",
     description:
-      "Confirm with secure checkout — no calls, no email chains, no waiting on a host to reply.",
+      "Review the studio’s availability, pricing, and booking terms before you continue.",
     icon: Zap,
     details: [
-      "Secure checkout in a few clicks",
-      "Host confirmation within minutes",
-      "Free cancellation window on every booking",
+      "Check current rates and availability",
+      "Read the applicable booking details",
+      "Contact the host if you need clarity",
     ],
-    meta: "Instant",
+    meta: "Know before you book",
   },
   {
     index: "04",
-    title: "Create & Produce",
+    title: "Get ready to create",
     description:
-      "Show up and shoot. Everything you need is ready — then rate the space and rebook in one tap.",
+      "Use the listing’s access instructions and house rules to prepare for your time in the studio.",
     icon: Camera,
     details: [
-      "Door codes sent before arrival",
-      "On-site host support during your session",
-      "Rate your space and rebook in one tap",
+      "Review the studio’s house rules",
+      "Check access details before arrival",
+      "Bring your idea to the right space",
     ],
-    meta: "Your session",
+    meta: "Make room for ideas",
   },
 ];
 
@@ -80,7 +80,7 @@ const HowBookingWork = () => {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-heading"
-      className="border-y border-border bg-muted/20 py-16 md:py-20 lg:py-24"
+      className="scroll-mt-20 border-y border-border bg-muted/20 py-16 md:py-20 lg:py-24"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* ── Header — centered, echoes the hero/featured rhythm ────── */}
@@ -90,19 +90,19 @@ const HowBookingWork = () => {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex size-1.5 rounded-full bg-accent" />
             </span>
-            Simple Booking
+            Your creative process
           </span>
 
           <h2
             id="how-it-works-heading"
             className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground text-balance md:text-4xl"
           >
-            How Booking <span className="text-primary">Works</span>
+            How It <span className="text-primary">Works</span>
           </h2>
 
           <p className="mt-4 text-base leading-relaxed text-muted-foreground text-balance md:text-lg">
-            From search to shoot in four steps — no phone calls, no waiting,
-            no surprises.
+            Find a space that fits your project, review the details, and get
+            ready to create.
           </p>
         </div>
 
@@ -171,36 +171,19 @@ const HowBookingWork = () => {
         <div className="mt-12 flex flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-5">
             <p className="font-heading text-lg font-bold tracking-tight text-foreground">
-              Ready to shoot?
+              Ready to find your space?
             </p>
             <Button
               nativeButton={false}
               render={<Link href="/studios" />}
               className="rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/10 transition-all hover:bg-primary/90 active:scale-95"
             >
-              Start browsing studios
+              Explore studios
             </Button>
           </div>
 
-          <p className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <span>
-              Avg. booking time:{" "}
-              <span className="font-semibold text-foreground">under 5 min</span>
-            </span>
-            <span aria-hidden="true" className="hidden sm:inline">
-              ·
-            </span>
-            <span>
-              <span className="font-semibold text-foreground">2,400+</span>{" "}
-              sessions booked
-            </span>
-            <span aria-hidden="true" className="hidden sm:inline">
-              ·
-            </span>
-            <span>
-              <span className="font-semibold text-foreground">100%</span>{" "}
-              verified hosts
-            </span>
+          <p className="text-center text-sm text-muted-foreground">
+            Spaces for photo, film, podcasts, music, and more.
           </p>
         </div>
       </div>

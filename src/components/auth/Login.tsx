@@ -58,17 +58,30 @@ export default function Login() {
     }
   };
 
+  const signInWithGoogle = async () => {
+    const data = await signIn.social({
+      provider: "google",
+    });
+
+    console.log(data);
+    console.log("google clicked");
+
+    if (!data) {
+      setNotice({
+        kind: "info",
+        message: "Google sign-in is not connected yet.",
+      });
+    }
+  };
+
   return (
     <AuthLayout mode="login">
       <Button
         type="button"
         variant="outline"
-        onClick={() =>
-          setNotice({
-            kind: "info",
-            message: "Google sign-in is not connected yet.",
-          })
-        }
+        onClick={() => {
+          signInWithGoogle();
+        }}
         className="h-12 w-full gap-3 rounded-xl border-border bg-background/70 font-semibold text-foreground hover:bg-secondary"
       >
         <GoogleMark />
@@ -125,12 +138,12 @@ export default function Login() {
           </label>
           <button
             type="button"
-            onClick={() =>
+            onClick={() => {
               setNotice({
                 kind: "info",
                 message: "Password recovery is not available yet.",
-              })
-            }
+              });
+            }}
             className="text-sm font-semibold text-primary transition-colors hover:text-primary/80"
           >
             Forgot password?

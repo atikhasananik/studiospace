@@ -83,6 +83,7 @@ export default function Register() {
           icon={<UserRound className="size-4" />}
           placeholder="Your name"
           autoComplete="name"
+          required={true}
         />
         <AuthField
           id="email"
@@ -91,6 +92,7 @@ export default function Register() {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
+          required={true}
         />
         <AuthField
           id="photoUrl"
@@ -99,7 +101,7 @@ export default function Register() {
           type="url"
           placeholder="https://example.com/your-photo.jpg"
           autoComplete="url"
-          required={false}
+          required={true}
         />
         <AuthField
           id="password"
@@ -109,6 +111,7 @@ export default function Register() {
           placeholder="Create a password"
           autoComplete="new-password"
           value={password}
+          required={true}
           onChange={(event) => {
             setPassword(event.currentTarget.value);
             setNotice("");

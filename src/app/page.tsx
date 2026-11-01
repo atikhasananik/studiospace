@@ -14,10 +14,10 @@ const HomePage = () => {
       <Hero />
       <FeaturedSection />
       <Category />
-      <HowBookingWork />
       <HostGuarantee />
       <AboutSection />
       <WhatWeDoSection />
+      <HowBookingWork />
       <FAQSection />
     </>
   );

@@ -45,8 +45,8 @@ import { authClient, useSession } from "@/lib/auth-client";
 const routes = [
   { href: "/", label: "Home" },
   { href: "/studios", label: "Explore Studios" },
-  { href: "/how-it-works", label: "How It Works" }, 
-  { href: "/about", label: "About Us" }, 
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/#about", label: "About Us" },
 
 ] as const;
 

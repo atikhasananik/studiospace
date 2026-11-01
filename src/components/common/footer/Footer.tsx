@@ -6,7 +6,7 @@ import { NewsletterForm } from "@/components/common/footer/NewsletterForm";
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
   { label: "Explore studios", href: "/studios" },
-  { label: "How it works", href: "/how-it-works" },
+  { label: "How it works", href: "/#how-it-works" },
   { label: "About us", href: "/#about" },
   { label: "FAQs", href: "/#faq" },
   { label: "Contact", href: "/contact" },

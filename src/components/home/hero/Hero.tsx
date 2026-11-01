@@ -201,7 +201,7 @@ export function Hero() {
                       render={<Link href="/#host-guarantee" />}
                       className="h-12 rounded-xl border-foreground/25 bg-foreground/5 px-6 text-sm font-semibold text-foreground backdrop-blur-md transition-colors hover:border-foreground/50 hover:bg-foreground/10 hover:text-foreground"
                     >
-                      List your space
+                      Host Your Space
                     </Button>
                   </div>
                 </div>

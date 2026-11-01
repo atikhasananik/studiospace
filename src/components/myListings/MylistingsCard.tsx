@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ComponentType } from "react";
+import { useState } from "react";
 import { Building2, Check, MapPin, Pencil, Trash2 } from "lucide-react";
 
 import type { IStudio } from "@/components/type/studio.type";
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import MyListingUpdateForm from "./MyListingUpdateForm";
 import { deleteStudioData } from "../data/deleteData";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -26,10 +25,9 @@ import Link from "next/link";
 const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
   const [studio] = useState(initialStudio);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [saveMessage] = useState("");
-  const Router = useRouter()
-  console.log(studio._id)
+  const Router = useRouter();
+  console.log(studio._id);
 
   const handleDelete = async () => {
     console.log("delete btn clicked");
@@ -37,7 +35,7 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
     if (!res) {
       console.warn("Failed to delete studio data");
       return;
-    }else {
+    } else {
       console.log("Studio deleted successfully");
       Router.refresh();
     }
@@ -115,7 +113,7 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
               Update
             </Button>
           </Link>
-        
+
           <Button
             type="button"
             variant="outline"
@@ -160,13 +158,6 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* {isUpdateDialogOpen && (
-        <MyListingUpdateForm
-          studio={studio}
-          onOpenChange={setIsUpdateDialogOpen}
-        />
-      )} */}
     </article>
   );
 };
