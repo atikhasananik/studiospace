@@ -41,7 +41,7 @@ export function StudioCard({ studio }: { studio: IStudio }) {
               className="size-4 fill-primary text-primary"
               aria-hidden="true"
             />
-            {studio.rating.toFixed(1)}
+            {studio?.rating}
           </span>
         </div>
 

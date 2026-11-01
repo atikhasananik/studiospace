@@ -13,6 +13,7 @@ import {
   Plus,
   Camera,
   X,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -88,11 +89,13 @@ function FormField({
 }
 
 export function AddStudioForm({ user }: AddStudioFormProps) {
+  // Track the amenities selected in the custom checkbox list so we can submit them as an array.
   const [amenities, setAmenities] = useState<string[]>([]);
   const [customAmenity, setCustomAmenity] = useState("");
   const [previewNotice, setPreviewNotice] = useState(false);
   const [category, setCategory] = useState<string | null>(null);
 
+  // Keep the selected amenity list in sync with the custom UI controls.
   const toggleAmenity = (amenity: string, checked: boolean) => {
     setAmenities((current) =>
       checked
@@ -110,21 +113,30 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
 
     setPreviewNotice(true);
 
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const formData = new FormData(form);
+    const data: Record<string, unknown> = Object.fromEntries(
+      formData.entries(),
+    );
+
+    data.amenities = amenities;
     console.log(data);
 
     const res = await postStudioData(data);
-
-    
     console.log(res);
+    if (!res.acknowledged) {
+      console.log("Failed to submit studio data:");
+      return;
+    } else {
+      form.reset();
+    }
   };
 
   return (
-    <section className="relative flex-1 overflow-hidden bg-background py-10 md:py-14">
+    <section className="relative flex-1 overflow-hidden bg-background py-15 md:py-20">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_68%)]"
@@ -172,6 +184,12 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
 
         <form
           onSubmit={handleSubmit}
+          onReset={() => {
+            setAmenities([]);
+            setCustomAmenity("");
+            setCategory(null);
+            setPreviewNotice(false);
+          }}
           onChange={() => setPreviewNotice(false)}
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-primary/5"
         >
@@ -282,6 +300,29 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                       name="imageUrl"
                       type="url"
                       placeholder="https://example.com/studio.jpg"
+                      className={`${FIELD_CONTROL_CLASS} pl-10`}
+                    />
+                  </div>
+                </FormField>
+
+                <FormField
+                  id="Rating"
+                  label="Studio Rating"
+                  hint="Rate your studio from 0 to 5."
+                >
+                  <div className="relative">
+                    <Star
+                      className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      id="Rating"
+                      name="rating"
+                      type="number"
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      placeholder="4.0"
                       className={`${FIELD_CONTROL_CLASS} pl-10`}
                     />
                   </div>
@@ -504,6 +545,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                 <FormField id="hostName" label="Your name">
                   <Input
                     id="hostName"
+                    name="hostName"
                     value={user.name}
                     readOnly
                     className={`${FIELD_CONTROL_CLASS} cursor-not-allowed bg-muted text-muted-foreground hover:border-border`}
@@ -512,6 +554,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                 <FormField id="hostEmail" label="Your email">
                   <Input
                     id="hostEmail"
+                    name="hostEmail"
                     type="email"
                     value={user.email}
                     readOnly
@@ -527,13 +570,8 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
               UI preview only — your listing will not be saved.
             </p>
             <div className="flex flex-col-reverse gap-3 sm:flex-row">
-              <Button
-                nativeButton={false}
-                render={<Link href="/studios" />}
-                variant="outline"
-                className="h-11 px-5"
-              >
-                Cancel
+              <Button type="reset" variant="outline" className="h-11 px-5">
+                Reset form
               </Button>
               <Button
                 type="submit"

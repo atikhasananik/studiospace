@@ -1,9 +1,7 @@
-import { IStudio } from "../type/studio.type";
-
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-export const postStudioData = async (data) => {
+export const postStudioData = async (data: Record<string, unknown>) => {
   const res = await fetch(`${API_BASE}/addstudio`, {
     method: "POST",
     headers: {

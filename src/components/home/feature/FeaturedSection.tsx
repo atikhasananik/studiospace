@@ -85,7 +85,7 @@ const FeaturedSection = async () => {
                       aria-hidden="true"
                     />
                     <span className="font-bold text-foreground">
-                      {studio.rating.toFixed(1)}
+                      {studio.rating}
                     </span>
                   </span>
                 </div>

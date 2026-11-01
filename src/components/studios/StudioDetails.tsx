@@ -46,7 +46,7 @@ export async function StudioDetails({ id }: { id: string }) {
                       className="size-4 fill-primary text-primary"
                       aria-hidden="true"
                     />
-                    {studio.rating.toFixed(1)} rating
+                    {studio?.rating} rating
                   </span>
                 </div>
               </div>
@@ -61,7 +61,7 @@ export async function StudioDetails({ id }: { id: string }) {
                 </p>
               </div>
 
-              {studio.amenities.length > 0 && (
+              {studio.amenities?.length > 0 && (
                 <div>
                   <h2 className="font-heading text-lg font-bold text-foreground">
                     Amenities
