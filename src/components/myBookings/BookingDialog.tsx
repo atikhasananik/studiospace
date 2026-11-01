@@ -15,7 +15,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/toast";
 import type { IStudio } from "@/components/type/studio.type";
+import { useSession } from "@/lib/auth-client";
+import { date } from "better-auth";
+import { postBookingData } from "../data/postData";
+import { IBookingData } from "../type/booking.type";
 
 export function BookingDialog({ studio }: { studio: IStudio }) {
   const router = useRouter();
@@ -27,6 +32,8 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { data: session, isPending } = useSession();
+
   const total = studio.hourlyRate * durationHours;
 
   const submitBooking = async (event: FormEvent<HTMLFormElement>) => {
@@ -34,33 +41,82 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
     setErrorMessage("");
     setIsSubmitting(true);
 
-    try {
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studioId: studio._id,
-          startAt: new Date(startAt).toISOString(),
-          durationHours,
-          guestCount,
-        }),
-      });
-      const result: { error?: string } = await response.json();
+    const bookedby = session?.user.email ?? "";
 
-      if (!response.ok) {
-        setErrorMessage(result.error ?? "Unable to place your booking.");
-        return;
-      }
+    const bookingData = {
+      studio,
+      bookedby,
+      startAt: new Date(startAt),
+      endAt:new Date( new Date(startAt).getTime() + durationHours * 60 * 60 * 1000),
+      durationHours,
+      guestCount,
+      status: "pending",
+    } as IBookingData;
 
-      setOpen(false);
-      router.push("/my-bookings?created=1");
-      router.refresh();
-    } catch (error) {
-      console.error("Booking request failed:", error);
-      setErrorMessage("Unable to reach the booking service. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    
+
+    const res = await postBookingData(bookedby, bookingData);
+    console.log(res)
+
+    // try {
+    //   const response = await fetch("/api/bookings", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({
+    //       studioId: studio._id,
+    //       startAt: new Date(startAt).toISOString(),
+    //       durationHours,
+    //       guestCount,
+    //     }),
+    //   });
+
+    //   if (response.status === 401) {
+    //     const callbackURL = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    //     router.push(`/login?callbackURL=${encodeURIComponent(callbackURL)}`);
+    //     return;
+    //   }
+
+    //   const result: { error?: string } = await response.json();
+
+    //   if (!response.ok) {
+    //     setErrorMessage(result.error ?? "Unable to place your booking.");
+    //     return;
+    //   }
+
+    //   setOpen(false);
+    //   toast.add({
+    //     title: "Booking request sent",
+    //     description: "The host will review your request.",
+    //     type: "success",
+    //   });
+    //   router.push("/my-bookings");
+    //   router.refresh();
+    // } catch (error) {
+    //   console.error("Booking request failed:", error);
+    //   toast.add({
+    //     title: "Booking request failed",
+    //     description:
+    //       error instanceof Error
+    //         ? error.message
+    //         : "Unable to reach the booking service. Please try again.",
+    //     type: "error",
+    //   });
+    //   setErrorMessage("Unable to reach the booking service. Please try again.");
+    // } finally {
+    //   setIsSubmitting(false);
+    // }
+  };
+
+  const handleModalBtn = () => {
+    if (isPending) return;
+
+    if (!session?.user) {
+      const callbackURL = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      router.push(`/login?callbackURL=${encodeURIComponent(callbackURL)}`);
+      return;
     }
+
+    setOpen(true);
   };
 
   return (
@@ -69,13 +125,11 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
         type="button"
         onClick={() => {
           setMinimumDateTime(
-            new Date(
-              Date.now() - new Date().getTimezoneOffset() * 60_000,
-            )
+            new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
               .toISOString()
               .slice(0, 16),
           );
-          setOpen(true);
+          handleModalBtn();
         }}
         className="mt-5 h-11 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/15 transition-all hover:bg-primary/90 hover:shadow-primary/25"
       >
@@ -206,7 +260,7 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting || !startAt || guestCount < 1}
+                // disabled={isSubmitting || !startAt || guestCount < 1}
                 className="gap-2"
               >
                 <CalendarDays aria-hidden="true" />

@@ -1,3 +1,5 @@
+import { IStudio } from "./studio.type";
+
 export type BookingStatus =
   | "Pending"
   | "Confirmed"
@@ -22,3 +24,14 @@ export type Booking = {
   status: BookingStatus;
   createdAt: string;
 };
+
+
+export interface IBookingData {
+  bookedby: string;
+  durationHours: number;
+  guestCount: number;
+  startAt: object;
+  endAt:object;
+  status: "pending" | "confirmed" | "cancelled";
+  studio: IStudio
+}

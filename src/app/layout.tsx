@@ -4,6 +4,7 @@ import { Navbar } from "@/components/common/navbar/navbar";
 import { Footer } from "@/components/common/footer/Footer";
 import { BackToTop } from "@/components/back-to-top/BackToTop";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,10 +46,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/20 selection:text-primary">
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
-          <BackToTop />
+          <Toaster>
+            <Navbar />
+            <main className="flex-1 flex flex-col">{children}</main>
+            <Footer />
+            <BackToTop />
+          </Toaster>
         </ThemeProvider>
       </body>
     </html>

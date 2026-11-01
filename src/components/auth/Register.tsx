@@ -18,6 +18,7 @@ import {
 import { AuthField, AuthLayout } from "./AuthLayout";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { queueToast, toast } from "@/components/ui/toast";
 import { signUp } from "@/lib/auth-client";
 
 export default function Register() {
@@ -56,17 +57,34 @@ export default function Register() {
       });
 
       if (error) {
+        toast.add({
+          title: "Unable to create account",
+          description: error.message || "Please try again.",
+          type: "error",
+        });
         setNotice(error.message || "Unable to create your account.");
         return;
       }
 
+      queueToast({
+        title: "Account created",
+        description: "Welcome to StudioSpace.",
+        type: "success",
+      });
       router.refresh();
       router.push("/");
     } catch (error) {
-      setNotice(
+      const message =
         error instanceof Error
           ? error.message
-          : "Unable to create your account. Please try again.",
+          : "Unable to create your account. Please try again.";
+      toast.add({
+        title: "Unable to create account",
+        description: message,
+        type: "error",
+      });
+      setNotice(
+        message,
       );
     } finally {
       setIsSubmitting(false);

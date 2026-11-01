@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { queueToast, toast } from "@/components/ui/toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,18 +106,34 @@ export function Navbar() {
     try {
       const { error } = await authClient.signOut();
       if (error) {
-        setLogoutError(error.message || "Unable to log out. Please try again.");
+        const message = error.message || "Unable to log out. Please try again.";
+        toast.add({
+          title: "Unable to log out",
+          description: message,
+          type: "error",
+        });
+        setLogoutError(message);
         return;
       }
 
+      queueToast({
+        title: "Signed out",
+        description: "You have been logged out successfully.",
+        type: "success",
+      });
       router.push("/");
       router.refresh();
     } catch (error) {
-      setLogoutError(
+      const message =
         error instanceof Error
           ? error.message
-          : "Unable to log out. Please try again.",
-      );
+          : "Unable to log out. Please try again.";
+      toast.add({
+        title: "Unable to log out",
+        description: message,
+        type: "error",
+      });
+      setLogoutError(message);
     } finally {
       setIsLoggingOut(false);
     }

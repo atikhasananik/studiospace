@@ -8,6 +8,11 @@ import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { AuthField, AuthLayout, GoogleMark } from "./AuthLayout";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  clearQueuedToast,
+  queueToast,
+  toast,
+} from "@/components/ui/toast";
 import { signIn } from "@/lib/auth-client";
 
 function getCallbackURL() {
@@ -56,6 +61,11 @@ export default function Login() {
       });
 
       if (error) {
+        toast.add({
+          title: "Unable to sign in",
+          description: error.message || "Check your details and try again.",
+          type: "error",
+        });
         setNotice({
           kind: "error",
           message: error.message || "Unable to sign in. Check your details.",
@@ -63,14 +73,25 @@ export default function Login() {
         return;
       }
 
+      queueToast({
+        title: "Welcome back",
+        description: "You’re signed in successfully.",
+        type: "success",
+      });
       router.replace(callbackURL);
     } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to sign in. Please try again.";
+      toast.add({
+        title: "Unable to sign in",
+        description: message,
+        type: "error",
+      });
       setNotice({
         kind: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Unable to sign in. Please try again.",
+        message,
       });
     } finally {
       setIsSubmitting(false);
@@ -79,16 +100,54 @@ export default function Login() {
 
   const signInWithGoogle = async () => {
     const callbackURL = getCallbackURL();
-    const data = await signIn.social({
-      provider: "google",
-      callbackURL,
-    });
+    try {
+      queueToast({
+        title: "Welcome back",
+        description: "You’re signed in successfully.",
+        type: "success",
+      });
+      const data = await signIn.social({
+        provider: "google",
+        callbackURL,
+      });
 
-
-    if (!data) {
+      if (data.error) {
+        clearQueuedToast();
+        toast.add({
+          title: "Unable to sign in",
+          description: data.error.message || "Google sign-in failed.",
+          type: "error",
+        });
+        setNotice({
+          kind: "error",
+          message: data.error.message || "Google sign-in failed.",
+        });
+      } else if (!data.data?.url && !data.data?.redirect) {
+        clearQueuedToast();
+        toast.add({
+          title: "Unable to sign in",
+          description: "Google sign-in could not be started.",
+          type: "error",
+        });
+        setNotice({
+          kind: "error",
+          message: "Google sign-in could not be started.",
+        });
+      }
+    } catch (error) {
+      clearQueuedToast();
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to start Google sign-in.";
+      toast.add({
+        title: "Unable to sign in",
+        description: message,
+        type: "error",
+      });
       setNotice({
-        kind: "info",
-        message: "Google sign-in is not connected yet.",
+        kind: "error",
+        message,
       });
     }
   };

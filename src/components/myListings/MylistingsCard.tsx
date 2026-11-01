@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Building2, Check, MapPin, Pencil, Trash2 } from "lucide-react";
+import { Building2, MapPin, Pencil, Trash2 } from "lucide-react";
 
 import type { IStudio } from "@/components/type/studio.type";
 import { AlertDialog } from "@/components/ui/alert-dialog";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { deleteStudioData } from "../data/deleteData";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -25,21 +26,41 @@ import Link from "next/link";
 const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
   const [studio] = useState(initialStudio);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [saveMessage] = useState("");
-  const Router = useRouter();
-  console.log(studio._id);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
-    console.log("delete btn clicked");
-    const res = await deleteStudioData(studio._id);
-    if (!res) {
-      console.warn("Failed to delete studio data");
-      return;
-    } else {
-      console.log("Studio deleted successfully");
-      Router.refresh();
+    setIsDeleting(true);
+    try {
+      const result = await deleteStudioData(studio._id);
+      if (!result) {
+        toast.add({
+          title: "Studio deletion failed",
+          description: "Unable to delete this listing. Please try again.",
+          type: "error",
+        });
+        return;
+      }
+
+      toast.add({
+        title: "Studio deleted",
+        description: `${studio.title} has been removed from your listings.`,
+        type: "success",
+      });
+      setIsDeleteDialogOpen(false);
+      router.refresh();
+    } catch (error) {
+      toast.add({
+        title: "Studio deletion failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Unable to delete this listing. Please try again.",
+        type: "error",
+      });
+    } finally {
+      setIsDeleting(false);
     }
-    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -67,15 +88,6 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        {saveMessage && (
-          <p
-            role="status"
-            className="mb-3 flex items-center gap-2 text-xs font-medium text-accent"
-          >
-            <Check className="size-4" aria-hidden="true" />
-            {saveMessage}
-          </p>
-        )}
         <h3 className="line-clamp-1 font-heading text-xl font-bold tracking-tight text-foreground">
           {studio.title}
         </h3>
@@ -150,10 +162,11 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
             <AlertDialogCancel>Keep listing</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
+              disabled={isDeleting}
               className="gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               <Trash2 aria-hidden="true" />
-              Yes, delete
+              {isDeleting ? "Deleting..." : "Yes, delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

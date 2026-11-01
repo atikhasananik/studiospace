@@ -5,17 +5,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   CalendarDays,
-  Check,
   Clock3,
   MapPin,
   Users,
   X,
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 
 import type { Booking, BookingStatus } from "@/components/type/booking.type";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,15 +42,11 @@ function formatBookingDate(startAt: string) {
 }
 
 export function MyBookings() {
-  const searchParams = useSearchParams();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
-  const [toastMessage, setToastMessage] = useState(
-    searchParams.get("created") === "1" ? "Booking request sent to the host." : "",
-  );
 
   useEffect(() => {
     const controller = new AbortController();
@@ -92,12 +87,6 @@ export function MyBookings() {
     return () => controller.abort();
   }, []);
 
-  useEffect(() => {
-    if (!toastMessage) return;
-    const timeout = window.setTimeout(() => setToastMessage(""), 4000);
-    return () => window.clearTimeout(timeout);
-  }, [toastMessage]);
-
   const cancelBooking = async () => {
     if (!bookingToCancel) return;
     setIsCancelling(true);
@@ -125,13 +114,22 @@ export function MyBookings() {
         ),
       );
       setBookingToCancel(null);
-      setToastMessage("Booking cancelled successfully.");
+      toast.add({
+        title: "Booking cancelled",
+        description: "Your booking request has been cancelled.",
+        type: "success",
+      });
     } catch (error) {
-      setLoadError(
+      const message =
         error instanceof Error
           ? error.message
-          : "Unable to cancel this booking.",
-      );
+          : "Unable to cancel this booking.";
+      toast.add({
+        title: "Booking cancellation failed",
+        description: message,
+        type: "error",
+      });
+      setLoadError(message);
     } finally {
       setIsCancelling(false);
     }
@@ -351,19 +349,6 @@ export function MyBookings() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {toastMessage && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed bottom-5 right-5 z-[60] flex max-w-sm items-center gap-3 rounded-xl border border-accent/30 bg-popover px-4 py-3 text-popover-foreground shadow-2xl shadow-background/30"
-        >
-          <Check
-            className="size-5 shrink-0 text-accent"
-            aria-hidden="true"
-          />
-          <span className="text-sm font-medium">{toastMessage}</span>
-        </div>
-      )}
     </section>
   );
 }

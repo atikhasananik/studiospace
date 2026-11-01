@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toast";
 import { postStudioData } from "../data/postData";
 import { useRouter } from "next/navigation";
 import type { IStudio } from "../type/studio.type";
@@ -148,6 +149,11 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
         const result = await updateStudioData(studio._id, updatedData);
 
         if (result === false) {
+          toast.add({
+            title: "Studio update failed",
+            description: "Unable to update this studio. Please try again.",
+            type: "error",
+          });
           setSubmitError("Unable to update this studio. Please try again.");
           return;
         }
@@ -162,19 +168,36 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
         };
         const result = await postStudioData(payload);
         if (!result?.acknowledged) {
+          toast.add({
+            title: "Studio creation failed",
+            description: "Unable to add this studio. Please try again.",
+            type: "error",
+          });
           setSubmitError("Unable to add this studio. Please try again.");
           return;
         }
       }
 
+      toast.add({
+        title: studio ? "Studio updated" : "Studio created",
+        description: studio
+          ? "Your listing changes have been saved."
+          : "Your new studio listing is live.",
+        type: "success",
+      });
       Router.push("/my-listings");
       Router.refresh();
     } catch (error) {
-      setSubmitError(
+      const message =
         error instanceof Error
           ? error.message
-          : `Unable to ${studio ? "update" : "add"} this studio. Please try again.`,
-      );
+          : `Unable to ${studio ? "update" : "add"} this studio. Please try again.`;
+      toast.add({
+        title: studio ? "Studio update failed" : "Studio creation failed",
+        description: message,
+        type: "error",
+      });
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }

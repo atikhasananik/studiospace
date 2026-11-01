@@ -2,12 +2,49 @@
 
 import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
+import { usePathname } from "next/navigation"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
 import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
 const toast = ToastPrimitive.createToastManager()
+
+type QueuedToast = {
+  title: string
+  description: string
+  type: "success" | "error" | "info" | "warning"
+}
+
+const QUEUED_TOAST_KEY = "studiospace:queued-toast"
+const TOAST_TYPES: QueuedToast["type"][] = [
+  "success",
+  "error",
+  "info",
+  "warning",
+]
+
+function queueToast(notice: QueuedToast) {
+  window.sessionStorage.setItem(QUEUED_TOAST_KEY, JSON.stringify(notice))
+}
+
+function clearQueuedToast() {
+  window.sessionStorage.removeItem(QUEUED_TOAST_KEY)
+}
+
+function isQueuedToast(notice: unknown): notice is QueuedToast {
+  return (
+    typeof notice === "object" &&
+    notice !== null &&
+    "title" in notice &&
+    typeof notice.title === "string" &&
+    "description" in notice &&
+    typeof notice.description === "string" &&
+    "type" in notice &&
+    typeof notice.type === "string" &&
+    TOAST_TYPES.some((type) => type === notice.type)
+  )
+}
 
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />
@@ -202,6 +239,31 @@ function Toaster({
   toastManager = toast,
   ...props
 }: ToastPrimitive.Provider.Props) {
+  const pathname = usePathname()
+
+  React.useEffect(() => {
+    const queuedToast = window.sessionStorage.getItem(QUEUED_TOAST_KEY)
+    if (!queuedToast) return
+
+    window.sessionStorage.removeItem(QUEUED_TOAST_KEY)
+
+    try {
+      const notice: unknown = JSON.parse(queuedToast)
+      if (!isQueuedToast(notice)) {
+        console.error("Discarding invalid queued toast notification.");
+        return
+      }
+
+      toastManager.add({
+        title: notice.title,
+        description: notice.description,
+        type: notice.type,
+      })
+    } catch (error) {
+      console.error("Unable to display queued toast notification:", error)
+    }
+  }, [pathname, toastManager])
+
   return (
     <ToastProvider toastManager={toastManager} {...props}>
       {children}
@@ -229,6 +291,8 @@ export {
   ToastTitle,
   ToastViewport,
   createToastManager,
+  clearQueuedToast,
+  queueToast,
   toast,
   useToastManager,
 }

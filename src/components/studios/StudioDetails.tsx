@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, MapPin, Star } from "lucide-react";
+import { ArrowLeft,  MapPin, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getSingleData } from "../data/getData";
 import { StudioImageCarousel } from "./StudioImageCarousel";
 import { BookingDialog } from "../myBookings/BookingDialog";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function StudioDetails({ id }: { id: string }) {
   const studio = await getSingleData(id);
