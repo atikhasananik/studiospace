@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthExperience } from "@/components/auth/AuthExperience";
+import Login from "@/components/auth/Login";
 
 export const metadata: Metadata = {
   title: "Sign in | StudioSpace",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <AuthExperience mode="login" />;
+  return <Login />;
 }

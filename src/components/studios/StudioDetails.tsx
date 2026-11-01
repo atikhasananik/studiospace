@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getSingleData } from "../data/getData";
 import { StudioImageCarousel } from "./StudioImageCarousel";
+import { BookingDialog } from "../myBookings/BookingDialog";
 
 export async function StudioDetails({ id }: { id: string }) {
   const studio = await getSingleData(id);
@@ -104,14 +105,7 @@ export async function StudioDetails({ id }: { id: string }) {
                   </span>
                 </p>
               </div>
-              <Button
-                nativeButton={false}
-                render={<Link href="/login" />}
-                className="mt-5 h-11 w-full rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/15 transition-all hover:bg-primary/90 hover:shadow-primary/25"
-              >
-                <CalendarDays aria-hidden="true" />
-                Book Now
-              </Button>
+              <BookingDialog studio={studio} />
             </aside>
           </div>
         </article>

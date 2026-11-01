@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthExperience } from "@/components/auth/AuthExperience";
+import Register from "@/components/auth/Register";
 
 export const metadata: Metadata = {
   title: "Create an account | StudioSpace",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return <AuthExperience mode="register" />;
+  return <Register />;
 }

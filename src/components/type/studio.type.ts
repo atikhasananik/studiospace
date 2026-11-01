@@ -10,5 +10,8 @@ export interface IStudio {
   amenities: string[]
   detailedOverview: string
   rating: number
+  hostEmail?: string
+  hostName?: string
   ownerEmail?: string
+  ownerName?: string
 }

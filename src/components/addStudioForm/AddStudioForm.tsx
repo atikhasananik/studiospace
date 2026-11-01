@@ -32,6 +32,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { postStudioData } from "../data/postData";
+import { useRouter } from "next/navigation";
+import type { IStudio } from "../type/studio.type";
+import { updateStudioData } from "../data/updateData";
+import type { TUpdatedData } from "../type/updateData.type";
 
 const CATEGORIES = [
   { label: "Photo Studios", icon: Camera, detail: "Photography & production" },
@@ -62,6 +66,7 @@ type AddStudioFormProps = {
     name: string;
     email: string;
   };
+  studio?: IStudio;
 };
 
 function FormField({
@@ -88,12 +93,17 @@ function FormField({
   );
 }
 
-export function AddStudioForm({ user }: AddStudioFormProps) {
+export function AddStudioForm({ user, studio }: AddStudioFormProps) {
   // Track the amenities selected in the custom checkbox list so we can submit them as an array.
-  const [amenities, setAmenities] = useState<string[]>([]);
+  const [amenities, setAmenities] = useState<string[]>(studio?.amenities ?? []);
   const [customAmenity, setCustomAmenity] = useState("");
-  const [previewNotice, setPreviewNotice] = useState(false);
-  const [category, setCategory] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [category, setCategory] = useState<string | null>(
+    studio?.category ?? null,
+  );
+
+  const Router = useRouter();
 
   // Keep the selected amenity list in sync with the custom UI controls.
   const toggleAmenity = (amenity: string, checked: boolean) => {
@@ -113,26 +123,60 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = event.currentTarget;
+    setSubmitError("");
+    setIsSubmitting(true);
 
-    setPreviewNotice(true);
+    const formData = new FormData(event.currentTarget);
+    const getValue = (name: string) => String(formData.get(name) ?? "");
 
-    const formData = new FormData(form);
-    const data: Record<string, unknown> = Object.fromEntries(
-      formData.entries(),
-    );
+    try {
+      if (studio) {
+        const updatedData: TUpdatedData = {
+          title: getValue("title"),
+          category: getValue("category"),
+          location: getValue("location"),
+          imageUrl: getValue("imageUrl"),
+          hourlyRate: getValue("hourlyRate"),
+          securityDeposit: getValue("securityDeposit"),
+          maxCapacity: getValue("maxCapacity"),
+          rating: getValue("rating"),
+          amenities,
+          detailedOverview: getValue("detailedOverview"),
+          hostEmail: user.email,
+          hostName: user.name,
+        };
+        const result = await updateStudioData(studio._id, updatedData);
 
-    data.amenities = amenities;
-    data.ownerEmail = user.email;
+        if (result === false) {
+          setSubmitError("Unable to update this studio. Please try again.");
+          return;
+        }
+      } else {
+        const payload = {
+          ...Object.fromEntries(formData.entries()),
+          amenities,
+          hostEmail: user.email,
+          hostName: user.name,
+          ownerEmail: user.email,
+          ownerName: user.name,
+        };
+        const result = await postStudioData(payload);
+        if (!result?.acknowledged) {
+          setSubmitError("Unable to add this studio. Please try again.");
+          return;
+        }
+      }
 
-    const res = await postStudioData(data);
-    console.log(data)
-    console.log(res);
-    if (!res.acknowledged) {
-      console.log("Failed to submit studio data:");
-      return;
-    } else {
-      form.reset();
+      Router.push("/my-listings");
+      Router.refresh();
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : `Unable to ${studio ? "update" : "add"} this studio. Please try again.`,
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -145,12 +189,12 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
       <div className="relative mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <Button
           nativeButton={false}
-          render={<Link href="/studios" />}
+          render={<Link href={studio ? "/my-listings" : "/studios"} />}
           variant="ghost"
           className="mb-6 gap-2 pl-0 text-muted-foreground hover:text-primary"
         >
           <ArrowLeft aria-hidden="true" />
-          Back to studios
+          {studio ? "Back to my listings" : "Back to studios"}
         </Button>
 
         <header className="mb-8 max-w-2xl">
@@ -162,36 +206,45 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
               className="size-1.5 rounded-full bg-accent"
               aria-hidden="true"
             />
-            Host a creative space
+            {studio ? "HOST / EDIT WORKSPACE" : "Host a creative space"}
           </Badge>
           <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground text-balance md:text-4xl">
-            Add a new <span className="text-primary">studio</span>
+            {studio ? (
+              <>
+                Update your <span className="text-primary">studio</span>
+              </>
+            ) : (
+              <>
+                Add a new <span className="text-primary">studio</span>
+              </>
+            )}
           </h1>
           <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-            Share the details creators need to find the right space for their
-            next project.
+            {studio
+              ? "Refresh your listing details so creators have the latest information about your space."
+              : "Share the details creators need to find the right space for their next project."}
           </p>
         </header>
 
-        {previewNotice && (
-          <Alert className="mb-6 border-accent/30 bg-accent/5 text-foreground">
-            <Info className="text-accent" aria-hidden="true" />
-            <AlertDescription className="text-foreground">
-              This form is a UI preview. Your studio details have not been
-              submitted or saved.
-            </AlertDescription>
+        {submitError && (
+          <Alert
+            variant="destructive"
+            className="mb-6 border-destructive/30 bg-destructive/5"
+          >
+            <Info aria-hidden="true" />
+            <AlertDescription>{submitError}</AlertDescription>
           </Alert>
         )}
 
         <form
           onSubmit={handleSubmit}
           onReset={() => {
-            setAmenities([]);
+            setAmenities(studio?.amenities ?? []);
             setCustomAmenity("");
-            setCategory(null);
-            setPreviewNotice(false);
+            setCategory(studio?.category ?? null);
+            setSubmitError("");
           }}
-          onChange={() => setPreviewNotice(false)}
+          onChange={() => setSubmitError("")}
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-primary/5"
         >
           <div className="space-y-10 p-5 sm:p-8 lg:p-10">
@@ -221,6 +274,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                     <Input
                       id="title"
                       name="title"
+                      defaultValue={studio?.title ?? ""}
                       required
                       placeholder="e.g. The Northlight Photo Loft"
                       className={FIELD_CONTROL_CLASS}
@@ -280,6 +334,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                   <Input
                     id="location"
                     name="location"
+                    defaultValue={studio?.location ?? ""}
                     required
                     placeholder="e.g. 24 Mercer Street, New York"
                     className={FIELD_CONTROL_CLASS}
@@ -300,6 +355,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                       id="imageUrl"
                       name="imageUrl"
                       type="url"
+                      defaultValue={studio?.imageUrl ?? ""}
                       placeholder="https://example.com/studio.jpg"
                       className={`${FIELD_CONTROL_CLASS} pl-10`}
                     />
@@ -323,6 +379,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                       min="0"
                       max="5"
                       step="0.1"
+                      defaultValue={studio?.rating ?? ""}
                       placeholder="4.0"
                       className={`${FIELD_CONTROL_CLASS} pl-10`}
                     />
@@ -359,6 +416,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                       type="number"
                       min="0"
                       step="0.01"
+                      defaultValue={studio?.hourlyRate ?? ""}
                       required
                       placeholder="0.00"
                       className={`${FIELD_CONTROL_CLASS} pl-8`}
@@ -377,6 +435,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                       type="number"
                       min="0"
                       step="0.01"
+                      defaultValue={studio?.securityDeposit ?? ""}
                       required
                       placeholder="0.00"
                       className={`${FIELD_CONTROL_CLASS} pl-8`}
@@ -391,6 +450,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                     type="number"
                     min="1"
                     step="1"
+                    defaultValue={studio?.maxCapacity ?? ""}
                     required
                     placeholder="e.g. 12"
                     className={FIELD_CONTROL_CLASS}
@@ -518,6 +578,7 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
                 <Textarea
                   id="detailedOverview"
                   name="detailedOverview"
+                  defaultValue={studio?.detailedOverview ?? ""}
                   required
                   rows={6}
                   placeholder="Describe the studio, its atmosphere, equipment, access, and what makes it a great place to create..."
@@ -568,18 +629,32 @@ export function AddStudioForm({ user }: AddStudioFormProps) {
 
           <div className="flex flex-col-reverse gap-3 border-t border-border bg-muted/30 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
             <p className="text-xs leading-relaxed text-muted-foreground">
-              UI preview only — your listing will not be saved.
+              {studio
+                ? "Review all changes before updating your listing."
+                : "Your listing will be added to StudioSpace when submitted."}
             </p>
             <div className="flex flex-col-reverse gap-3 sm:flex-row">
-              <Button type="reset" variant="outline" className="h-11 px-5">
-                Reset form
+              <Button
+                type="reset"
+                variant="outline"
+                className="h-11 px-5"
+                disabled={isSubmitting}
+              >
+                {studio ? "Reset changes" : "Reset form"}
               </Button>
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className="h-11 gap-2 rounded-lg px-6 font-semibold shadow-lg shadow-primary/15"
               >
                 <Check aria-hidden="true" />
-                Add Studio
+                {isSubmitting
+                  ? studio
+                    ? "Updating..."
+                    : "Adding..."
+                  : studio
+                    ? "Update Studio"
+                    : "Add Studio"}
               </Button>
             </div>
           </div>

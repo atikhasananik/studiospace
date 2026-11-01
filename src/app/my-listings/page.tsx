@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getMyListingsData } from "@/components/data/getData";
-import { MyListings } from "@/components/studios/MyListings";
+import { MyListings } from "@/components/myListings/MyListings";
 import { auth } from "@/lib/auth";
 import { IStudio } from "@/components/type/studio.type";
 

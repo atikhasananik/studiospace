@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { AddStudioForm } from "@/components/studios/AddStudioForm";
+import { AddStudioForm } from "@/components/addStudioForm/AddStudioForm";
 import { auth } from "@/lib/auth";
 
 export default async function AddStudioPage() {
