@@ -10,6 +10,25 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
 
+function getCallbackURL() {
+  const requestedURL = new URLSearchParams(window.location.search).get(
+    "callbackURL",
+  );
+  if (!requestedURL) return "/studios";
+
+  let callbackURL: URL;
+  try {
+    callbackURL = new URL(requestedURL, window.location.origin);
+  } catch (error) {
+    if (error instanceof TypeError) return "/studios";
+    throw error;
+  }
+
+  if (callbackURL.origin !== window.location.origin) return "/studios";
+
+  return `${callbackURL.pathname}${callbackURL.search}${callbackURL.hash}`;
+}
+
 export default function Login() {
   const router = useRouter();
   const [notice, setNotice] = useState<{
@@ -29,10 +48,11 @@ export default function Login() {
     const password = String(formData.get("password") ?? "");
 
     try {
+      const callbackURL = getCallbackURL();
       const { error } = await signIn.email({
         email,
         password,
-        callbackURL: "/studios",
+        callbackURL,
       });
 
       if (error) {
@@ -43,8 +63,7 @@ export default function Login() {
         return;
       }
 
-      router.push("/studios");
-      router.refresh();
+      router.replace(callbackURL);
     } catch (error) {
       setNotice({
         kind: "error",
@@ -59,12 +78,12 @@ export default function Login() {
   };
 
   const signInWithGoogle = async () => {
+    const callbackURL = getCallbackURL();
     const data = await signIn.social({
       provider: "google",
+      callbackURL,
     });
 
-    console.log(data);
-    console.log("google clicked");
 
     if (!data) {
       setNotice({

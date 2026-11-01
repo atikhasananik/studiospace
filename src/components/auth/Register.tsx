@@ -53,7 +53,6 @@ export default function Register() {
         email: String(formData.get("email") ?? "").trim(),
         password,
         image: String(formData.get("photoUrl") ?? "").trim() || undefined,
-        callbackURL: "/studios",
       });
 
       if (error) {
@@ -62,7 +61,7 @@ export default function Register() {
       }
 
       router.refresh();
-      router.push('/')
+      router.push("/");
     } catch (error) {
       setNotice(
         error instanceof Error

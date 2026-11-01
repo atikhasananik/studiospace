@@ -15,11 +15,7 @@ import {
 import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sheet,
   SheetClose,
@@ -47,7 +43,6 @@ const routes = [
   { href: "/studios", label: "Explore Studios" },
   { href: "/#how-it-works", label: "How It Works" },
   { href: "/#about", label: "About Us" },
-
 ] as const;
 
 const accountLinks = [
@@ -118,7 +113,9 @@ export function Navbar() {
       router.refresh();
     } catch (error) {
       setLogoutError(
-        error instanceof Error ? error.message : "Unable to log out. Please try again.",
+        error instanceof Error
+          ? error.message
+          : "Unable to log out. Please try again.",
       );
     } finally {
       setIsLoggingOut(false);
@@ -206,7 +203,10 @@ export function Navbar() {
                   className="group relative rounded-full border border-border bg-background/70 p-1 transition-colors hover:border-primary/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <Avatar className="size-9 border border-primary/30 bg-secondary">
-                    <AvatarImage src={user.image || undefined} alt="" />
+                    <AvatarImage
+                      src={session?.user.image || undefined}
+                      alt={user.name || "Your avatar"}
+                    />
                     <AvatarFallback className="bg-secondary font-heading text-xs font-bold text-primary">
                       {initials}
                     </AvatarFallback>
@@ -244,7 +244,10 @@ export function Navbar() {
                   ))}
                   <DropdownMenuSeparator />
                   {logoutError && (
-                    <p role="alert" className="px-2 py-1.5 text-xs text-destructive">
+                    <p
+                      role="alert"
+                      className="px-2 py-1.5 text-xs text-destructive"
+                    >
                       {logoutError}
                     </p>
                   )}
@@ -310,10 +313,7 @@ export function Navbar() {
                 <ThemeToggle />
               </SheetHeader>
 
-              <nav
-                aria-label="Mobile"
-                className="flex flex-col gap-1 p-4"
-              >
+              <nav aria-label="Mobile" className="flex flex-col gap-1 p-4">
                 {routes.map((route) => {
                   const active = isActive(route.href);
                   return (
@@ -380,7 +380,10 @@ export function Navbar() {
                       </SheetClose>
                     ))}
                     {logoutError && (
-                      <p role="alert" className="px-2 py-1 text-xs text-destructive">
+                      <p
+                        role="alert"
+                        className="px-2 py-1 text-xs text-destructive"
+                      >
                         {logoutError}
                       </p>
                     )}
