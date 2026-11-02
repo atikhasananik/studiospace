@@ -39,13 +39,7 @@ const cards = [
     icon: Clock3,
     tone: "text-primary bg-primary/10",
   },
-  {
-    key: "confirmedOrderCount",
-    label: "Confirmed orders",
-    detail: "Bookings approved by you",
-    icon: CheckCircle2,
-    tone: "text-accent bg-accent/10",
-  },
+ 
 ] as const;
 
 export function DashboardStats(props: DashboardStatsProps) {
