@@ -1,7 +1,6 @@
 import {
   ArrowUpRight,
   CalendarDays,
-  CheckCircle2,
   Clock3,
   Store,
 } from "lucide-react";

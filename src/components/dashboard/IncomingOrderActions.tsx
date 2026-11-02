@@ -19,6 +19,7 @@ import {
 import { toast } from "@/components/ui/toast";
 import { updatebookingstatus } from "@/components/data/updateData";
 import type { BookingStatus } from "@/components/type/booking.type";
+import { authClient } from "@/lib/auth-client";
 
 type IncomingOrderActionsProps = {
   bookingId: string;
@@ -41,8 +42,11 @@ export function IncomingOrderActions({
     if (!dialogAction || isSubmitting) return;
     setIsSubmitting(true);
 
+    const {data,error} = await authClient.token()
+    const token = data?.token as string
+
     try {
-      const result = await updatebookingstatus(bookingId, dialogAction);
+      const result = await updatebookingstatus(bookingId, dialogAction,token);
       if (result === false || result.modifiedCount === 0) {
         throw new Error("The booking status was not updated. Please try again.");
       }

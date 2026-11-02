@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import type { IStudio } from "@/components/type/studio.type";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { postBookingData } from "../data/postData";
 import type { IBookingData } from "../type/booking.type";
 
@@ -63,6 +63,9 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
     setErrorMessage("");
     setIsShaking(false);
     setIsSubmitting(true);
+    
+    const {data, error} = await authClient.token()
+    const token = data?.token as string
 
     const bookedby = session?.user.email ?? "";
 
@@ -79,7 +82,7 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
     } as IBookingData;
 
     try {
-      const response= await postBookingData(bookedby, bookingData);
+      const response= await postBookingData(bookedby, bookingData,token);
 
       if (!isBookingAcknowledged(response)) {
         setErrorMessage(

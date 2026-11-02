@@ -1,9 +1,11 @@
+import { auth } from "@/lib/auth";
 import { getDashboardData } from "./dashboard-data";
 import { DashboardHeader } from "./DashboardHeader";
 import { DashboardProfile } from "./DashboardProfile";
 import { DashboardQuickActions } from "./DashboardQuickActions";
 import { DashboardStats } from "./DashboardStats";
 import { IncomingOrders } from "./IncomingOrders";
+import { headers } from "next/headers";
 
 type DashboardProps = {
   name: string;
@@ -16,7 +18,11 @@ export default async function Dashboard({
   email,
   image,
 }: DashboardProps) {
-  const dashboardData = await getDashboardData(email);
+
+  const data = await auth.api.getToken({headers: await headers()})
+  const token = data.token
+
+  const dashboardData = await getDashboardData(email,token);
 
   return (
     <section className="relative flex-1 overflow-hidden bg-background pb-16 pt-28 md:pb-20 md:pt-32">

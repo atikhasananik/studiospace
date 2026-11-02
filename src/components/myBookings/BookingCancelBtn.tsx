@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { updatebookingstatus } from "../data/updateData";
 import type { BookingStatus } from "../type/booking.type";
+import { authClient } from "@/lib/auth-client";
 
 type BookingCancelBtnProps = {
   bookingId: string;
@@ -48,7 +49,9 @@ export default function BookingCancelBtn({
     setIsCancelling(true);
 
     try {
-      const response = await updatebookingstatus(bookingId, "cancelled");
+      const {data,error} = await authClient.token()
+      const token = data?.token as string
+      const response = await updatebookingstatus(bookingId, "cancelled",token);
 
       if (response === false || response.modifiedCount === 0) {
         toast.add({

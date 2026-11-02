@@ -145,13 +145,13 @@ function getRecords(value: unknown): unknown[] | null {
   return null;
 }
 
-export async function getDashboardData(email: string): Promise<DashboardData> {
+export async function getDashboardData(email: string,token:string): Promise<DashboardData> {
   const normalizedEmail = email.trim().toLocaleLowerCase();
   const [listingsResult, bookingsResult, ordersResult] =
     await Promise.allSettled([
-      getMyListingsData(normalizedEmail),
-      getMyBookingsData(normalizedEmail),
-      getMyOrdersData(normalizedEmail),
+      getMyListingsData(normalizedEmail,token),
+      getMyBookingsData(normalizedEmail,token),
+      getMyOrdersData(normalizedEmail,token),
     ]);
 
   const listingCount =

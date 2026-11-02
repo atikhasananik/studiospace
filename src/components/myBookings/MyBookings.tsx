@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/table";
 import { getMyBookingsData } from "../data/getData";
 import BookingCancelBtn from "./BookingCancelBtn";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const statusStyles: Record<BookingStatus, string> = {
   Pending: "border-primary/30 bg-primary/10 text-primary",
@@ -95,8 +97,11 @@ export default async function MyBookings({ email }: { email: string }) {
   let bookings: BookingRow[] = [];
   let loadError = "";
 
+  const data = await auth.api.getToken({headers : await headers()})
+  const token = data.token as string
+
   try {
-    const response: unknown = await getMyBookingsData(email);
+    const response: unknown = await getMyBookingsData(email,token);
     if (!Array.isArray(response) || !response.every(isBookingRow)) {
       throw new Error("The booking service returned an unexpected response.");
     }

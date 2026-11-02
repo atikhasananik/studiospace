@@ -86,10 +86,15 @@ export const getStudioById = async (id: string): Promise<IStudio | null> => {
 
 export const getMyListingsData = async (
   ownerEmail: string,
+  token:string
 ): Promise<IStudio[] | IStudio | null> => {
   try {
     const res = await fetch(
-      `${API_BASE}/getmylistings/${encodeURIComponent(ownerEmail)}`,
+      `${API_BASE}/getmylistings/${encodeURIComponent(ownerEmail)}`,{
+        headers:{
+          authorization: `bearer ${token}`
+        }
+      }
     );
 
     if (!res.ok) {
@@ -109,10 +114,14 @@ export const getMyListingsData = async (
   }
 };
 
-export const getMyBookingsData = async (email: string): Promise<unknown> => {
+export const getMyBookingsData = async (email: string,token:string): Promise<unknown> => {
   const res = await fetch(
     `${API_BASE}/mybookings/${encodeURIComponent(email)}`,
-    { cache: "no-store" },
+    { cache: "no-store" ,
+      headers:{
+        authorization: `bearer ${token}`
+      }
+    },
   );
   const data: unknown = await res.json();
 
@@ -123,9 +132,12 @@ export const getMyBookingsData = async (email: string): Promise<unknown> => {
   return data;
 };
 
-export const getMyOrdersData = async (email: string): Promise<unknown> => {
+export const getMyOrdersData = async (email: string ,token:string): Promise<unknown> => {
   const res = await fetch(`${API_BASE}/myorders/${encodeURIComponent(email)}`, {
     cache: "no-store",
+    headers:{
+      authorizaton: `bearer ${token}`
+    }
   });
 
   if (!res.ok) {

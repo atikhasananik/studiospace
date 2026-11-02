@@ -1,66 +1,27 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import {
-  ArrowLeft,
-  AudioLines,
-  Check,
-  Clapperboard,
-  ImagePlus,
-  Info,
-  Mic,
-  Palette,
-  Plus,
-  Camera,
-  X,
-  Star,
-} from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { postStudioData } from "../data/postData";
-import { useRouter } from "next/navigation";
 import type { IStudio } from "../type/studio.type";
 import { updateStudioData } from "../data/updateData";
 import type { TUpdatedData } from "../type/updateData.type";
+import { ListingDetailsSection } from "./ListingDetailsSection";
+import { PricingSection } from "./PricingSection";
+import { AmenitiesSection } from "./AmenitiesSection";
+import { OverviewSection } from "./OverviewSection";
+import { HostSection } from "./HostSection";
+import { FormActions } from "./FormActions";
+import { authClient } from "@/lib/auth-client";
+import { date } from "better-auth";
 
-const CATEGORIES = [
-  { label: "Photo Studios", icon: Camera, detail: "Photography & production" },
-  { label: "Sound Stages", icon: Clapperboard, detail: "Film & video shoots" },
-  { label: "Podcast Rooms", icon: Mic, detail: "Podcasting & voice work" },
-  { label: "Music Suites", icon: AudioLines, detail: "Recording & music" },
-  { label: "Art Workshops", icon: Palette, detail: "Artistry & making" },
-];
-
-const FIELD_CONTROL_CLASS =
-  "h-11 w-full rounded-lg border-border bg-background px-3.5 text-sm shadow-sm transition-all placeholder:text-muted-foreground/70 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-primary/20";
-
-const AMENITIES = [
-  "High-speed Wi-Fi",
-  "Professional lighting",
-  "Soundproofing",
-  "Changing room",
-  "Air conditioning",
-  "Free parking",
-  "Kitchen access",
-  "Wheelchair accessible",
-  "Green screen",
-  "Recording equipment",
-];
 
 type AddStudioFormProps = {
   user: {
@@ -70,32 +31,7 @@ type AddStudioFormProps = {
   studio?: IStudio;
 };
 
-function FormField({
-  id,
-  label,
-  hint,
-  children,
-}: {
-  id: string;
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm font-semibold text-foreground">
-        {label}
-      </Label>
-      {children}
-      {hint && (
-        <p className="text-xs leading-relaxed text-muted-foreground">{hint}</p>
-      )}
-    </div>
-  );
-}
-
 export function AddStudioForm({ user, studio }: AddStudioFormProps) {
-  // Track the amenities selected in the custom checkbox list so we can submit them as an array.
   const [amenities, setAmenities] = useState<string[]>(studio?.amenities ?? []);
   const [customAmenity, setCustomAmenity] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -103,10 +39,9 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
   const [category, setCategory] = useState<string | null>(
     studio?.category ?? null,
   );
-
-  const Router = useRouter();
-
-  // Keep the selected amenity list in sync with the custom UI controls.
+  
+  const router = useRouter();
+  
   const toggleAmenity = (amenity: string, checked: boolean) => {
     setAmenities((current) =>
       checked
@@ -126,10 +61,12 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
     event.preventDefault();
     setSubmitError("");
     setIsSubmitting(true);
-
+    
     const formData = new FormData(event.currentTarget);
     const getValue = (name: string) => String(formData.get(name) ?? "");
-
+    const{data,error} = await authClient.token()
+    const token = data?.token as string
+    
     try {
       if (studio) {
         const updatedData: TUpdatedData = {
@@ -146,7 +83,8 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
           hostEmail: user.email,
           hostName: user.name,
         };
-        const result = await updateStudioData(studio._id, updatedData);
+        
+        const result = await updateStudioData(studio._id, updatedData,token);
 
         if (result === false) {
           toast.add({
@@ -164,7 +102,7 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
           hostEmail: user.email,
           hostName: user.name,
         };
-        const result = await postStudioData(payload);
+        const result = await postStudioData(payload, token);
         if (!result?.acknowledged) {
           toast.add({
             title: "Studio creation failed",
@@ -183,8 +121,8 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
           : "Your new studio listing is live.",
         type: "success",
       });
-      Router.push("/my-listings");
-      Router.refresh();
+      router.push("/my-listings");
+      router.refresh();
     } catch (error) {
       const message =
         error instanceof Error
@@ -269,416 +207,26 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
           className="overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-primary/5"
         >
           <div className="space-y-10 p-5 sm:p-8 lg:p-10">
-            <section aria-labelledby="listing-details-heading">
-              <div className="mb-6 border-b border-border pb-4">
-                <p className="font-mono text-xs font-semibold tracking-[0.18em] text-primary">
-                  01 / LISTING
-                </p>
-                <h2
-                  id="listing-details-heading"
-                  className="mt-2 font-heading text-xl font-bold text-foreground"
-                >
-                  Studio details
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Give your space a clear identity.
-                </p>
-              </div>
-
-              <div className="grid gap-5 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <FormField
-                    id="title"
-                    label="Studio title"
-                    hint="Choose a name that helps creators understand what makes your space special."
-                  >
-                    <Input
-                      id="title"
-                      name="title"
-                      defaultValue={studio?.title ?? ""}
-                      required
-                      placeholder="e.g. The Northlight Photo Loft"
-                      className={FIELD_CONTROL_CLASS}
-                    />
-                  </FormField>
-                </div>
-
-                <FormField id="category" label="Category">
-                  <Select
-                    name="category"
-                    required
-                    value={category}
-                    onValueChange={setCategory}
-                  >
-                    <SelectTrigger
-                      id="category"
-                      className={`${FIELD_CONTROL_CLASS} justify-between  py-5.5 data-popup-open:border-primary/40 data-popup-open:bg-card`}
-                    >
-                      <SelectValue placeholder="Choose a studio category" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl  border border-border bg-card p-2 shadow-2xl shadow-background/40 ring-1 ring-primary/10">
-                      {CATEGORIES.map(
-                        ({ label, icon: Icon, detail }, index) => (
-                          <SelectItem
-                            key={label}
-                            value={label}
-                            className="group my-0.5 min-h-14 rounded-xl py-2 px-2.5  text-sm text-foreground transition-colors data-highlighted:bg-primary/10 data-highlighted:text-foreground data-[selected]:bg-primary/5"
-                          >
-                            <span className="flex min-w-0 items-center gap-3">
-                              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-primary transition-colors group-data-highlighted:border-primary/30 group-data-highlighted:bg-primary/10">
-                                <Icon className="size-4" aria-hidden="true" />
-                              </span>
-                              <span className="flex min-w-0 flex-col gap-1">
-                                <span className="font-semibold leading-none">
-                                  {label}
-                                </span>
-                                <span className="text-xs leading-none text-muted-foreground">
-                                  {detail}
-                                </span>
-                              </span>
-                              <span className="ml-auto mr-1 font-mono text-[10px] tracking-widest text-muted-foreground/60">
-                                0{index + 1}
-                              </span>
-                            </span>
-                          </SelectItem>
-                        ),
-                      )}
-                    </SelectContent>
-                  </Select>
-                </FormField>
-
-                <FormField
-                  id="location"
-                  label="Location / address"
-                  hint="Include a city or neighborhood so guests can find your space."
-                >
-                  <Input
-                    id="location"
-                    name="location"
-                    defaultValue={studio?.location ?? ""}
-                    required
-                    placeholder="e.g. 24 Mercer Street, New York"
-                    className={FIELD_CONTROL_CLASS}
-                  />
-                </FormField>
-
-                <FormField
-                  id="imageUrl"
-                  label="Cover image URL"
-                  hint="Use a direct link to a high-quality image of your studio."
-                >
-                  <div className="relative">
-                    <ImagePlus
-                      className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                      aria-hidden="true"
-                    />
-                    <Input
-                      id="imageUrl"
-                      name="imageUrl"
-                      type="url"
-                      defaultValue={studio?.imageUrl ?? ""}
-                      placeholder="https://example.com/studio.jpg"
-                      className={`${FIELD_CONTROL_CLASS} pl-10`}
-                    />
-                  </div>
-                </FormField>
-
-                <FormField
-                  id="Rating"
-                  label="Studio Rating"
-                  hint="Rate your studio from 0 to 5."
-                >
-                  <div className="relative">
-                    <Star
-                      className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                      aria-hidden="true"
-                    />
-                    <Input
-                      id="Rating"
-                      name="rating"
-                      type="number"
-                      min="0"
-                      max="5"
-                      step="0.1"
-                      defaultValue={studio?.rating ?? ""}
-                      placeholder="4.0"
-                      className={`${FIELD_CONTROL_CLASS} pl-10`}
-                    />
-                  </div>
-                </FormField>
-              </div>
-            </section>
-
-            <section aria-labelledby="pricing-heading">
-              <div className="mb-6 border-b border-border pb-4">
-                <p className="font-mono text-xs font-semibold tracking-[0.18em] text-primary">
-                  02 / PRICING
-                </p>
-                <h2
-                  id="pricing-heading"
-                  className="mt-2 font-heading text-xl font-bold text-foreground"
-                >
-                  Rates & capacity
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Set expectations for your guests before they book.
-                </p>
-              </div>
-
-              <div className="grid gap-5 sm:grid-cols-3">
-                <FormField id="hourlyRate" label="Hourly rate">
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      $
-                    </span>
-                    <Input
-                      id="hourlyRate"
-                      name="hourlyRate"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      defaultValue={studio?.hourlyRate ?? ""}
-                      required
-                      placeholder="0.00"
-                      className={`${FIELD_CONTROL_CLASS} pl-8`}
-                    />
-                  </div>
-                </FormField>
-
-                <FormField id="securityDeposit" label="Security deposit">
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                      $
-                    </span>
-                    <Input
-                      id="securityDeposit"
-                      name="securityDeposit"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      defaultValue={studio?.securityDeposit ?? ""}
-                      required
-                      placeholder="0.00"
-                      className={`${FIELD_CONTROL_CLASS} pl-8`}
-                    />
-                  </div>
-                </FormField>
-
-                <FormField id="maxCapacity" label="Maximum capacity">
-                  <Input
-                    id="maxCapacity"
-                    name="maxCapacity"
-                    type="number"
-                    min="1"
-                    step="1"
-                    defaultValue={studio?.maxCapacity ?? ""}
-                    required
-                    placeholder="e.g. 12"
-                    className={FIELD_CONTROL_CLASS}
-                  />
-                </FormField>
-              </div>
-            </section>
-
-            <section aria-labelledby="amenities-heading">
-              <div className="mb-6 border-b border-border pb-4">
-                <p className="font-mono text-xs font-semibold tracking-[0.18em] text-primary">
-                  03 / FEATURES
-                </p>
-                <h2
-                  id="amenities-heading"
-                  className="mt-2 font-heading text-xl font-bold text-foreground"
-                >
-                  Amenities & equipment
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Select what guests can expect to find in your space.
-                </p>
-              </div>
-
-              <fieldset>
-                <legend className="sr-only">Available amenities</legend>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {AMENITIES.map((amenity) => (
-                    <label
-                      key={amenity}
-                      className="flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-background px-3 py-3 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground has-aria-checked:border-primary/40 has-aria-checked:bg-primary/5 has-aria-checked:text-foreground"
-                    >
-                      <Checkbox
-                        checked={amenities.includes(amenity)}
-                        onCheckedChange={(checked) =>
-                          toggleAmenity(amenity, checked === true)
-                        }
-                      />
-                      {amenity}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <div className="mt-5">
-                <Label
-                  htmlFor="customAmenity"
-                  className="mb-2 text-sm font-semibold text-foreground"
-                >
-                  Add another amenity
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="customAmenity"
-                    value={customAmenity}
-                    onChange={(event) => setCustomAmenity(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        event.preventDefault();
-                        addCustomAmenity();
-                      }
-                    }}
-                    placeholder="Type an amenity and add it"
-                    className={FIELD_CONTROL_CLASS}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addCustomAmenity}
-                    className="h-11 shrink-0 gap-2"
-                  >
-                    <Plus aria-hidden="true" />
-                    Add
-                  </Button>
-                </div>
-                {amenities.some((amenity) => !AMENITIES.includes(amenity)) && (
-                  <ul className="mt-3 flex flex-wrap gap-2">
-                    {amenities
-                      .filter((amenity) => !AMENITIES.includes(amenity))
-                      .map((amenity) => (
-                        <li key={amenity}>
-                          <Badge
-                            variant="outline"
-                            className="gap-1.5 border-primary/30 bg-primary/5 py-1.5 text-foreground"
-                          >
-                            {amenity}
-                            <button
-                              type="button"
-                              aria-label={`Remove ${amenity}`}
-                              onClick={() => toggleAmenity(amenity, false)}
-                              className="rounded-full text-muted-foreground transition-colors hover:text-destructive"
-                            >
-                              <X className="size-3" aria-hidden="true" />
-                            </button>
-                          </Badge>
-                        </li>
-                      ))}
-                  </ul>
-                )}
-              </div>
-            </section>
-
-            <section aria-labelledby="overview-heading">
-              <div className="mb-6 border-b border-border pb-4">
-                <p className="font-mono text-xs font-semibold tracking-[0.18em] text-primary">
-                  04 / STORY
-                </p>
-                <h2
-                  id="overview-heading"
-                  className="mt-2 font-heading text-xl font-bold text-foreground"
-                >
-                  Tell us about your space
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Add helpful details about the space, setup, and ideal
-                  projects.
-                </p>
-              </div>
-
-              <FormField
-                id="detailedOverview"
-                label="Detailed overview"
-                hint="Share any important details guests should know before booking."
-              >
-                <Textarea
-                  id="detailedOverview"
-                  name="detailedOverview"
-                  defaultValue={studio?.detailedOverview ?? ""}
-                  required
-                  rows={6}
-                  placeholder="Describe the studio, its atmosphere, equipment, access, and what makes it a great place to create..."
-                  className="min-h-36 resize-y rounded-xl border-border bg-background px-3.5 py-3 text-sm shadow-sm transition-all placeholder:text-muted-foreground/70 hover:border-primary/40 focus-visible:border-primary focus-visible:ring-primary/20"
-                />
-              </FormField>
-            </section>
-
-            <section aria-labelledby="host-heading">
-              <div className="mb-6 border-b border-border pb-4">
-                <p className="font-mono text-xs font-semibold tracking-[0.18em] text-primary">
-                  05 / HOST
-                </p>
-                <h2
-                  id="host-heading"
-                  className="mt-2 font-heading text-xl font-bold text-foreground"
-                >
-                  Host account
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  These details are read-only and associated with your account.
-                </p>
-              </div>
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                <FormField id="hostName" label="Your name">
-                  <Input
-                    id="hostName"
-                    name="hostName"
-                    value={user.name}
-                    readOnly
-                    className={`${FIELD_CONTROL_CLASS} cursor-not-allowed bg-muted text-muted-foreground hover:border-border`}
-                  />
-                </FormField>
-                <FormField id="hostEmail" label="Your email">
-                  <Input
-                    id="hostEmail"
-                    name="hostEmail"
-                    type="email"
-                    value={user.email}
-                    readOnly
-                    className={`${FIELD_CONTROL_CLASS} cursor-not-allowed bg-muted text-muted-foreground hover:border-border`}
-                  />
-                </FormField>
-              </div>
-            </section>
+            <ListingDetailsSection
+              studio={studio}
+              category={category}
+              onCategoryChange={setCategory}
+            />
+            <PricingSection studio={studio} />
+            <AmenitiesSection
+              amenities={amenities}
+              customAmenity={customAmenity}
+              onCustomAmenityChange={setCustomAmenity}
+              onAddCustomAmenity={addCustomAmenity}
+              onToggleAmenity={toggleAmenity}
+            />
+            <OverviewSection studio={studio} />
+            <HostSection  user={user} />
           </div>
-
-          <div className="flex flex-col-reverse gap-3 border-t border-border bg-muted/30 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              {studio
-                ? "Review all changes before updating your listing."
-                : "Your listing will be added to StudioSpace when submitted."}
-            </p>
-            <div className="flex flex-col-reverse gap-3 sm:flex-row">
-              <Button
-                type="reset"
-                variant="outline"
-                className="h-11 px-5"
-                disabled={isSubmitting}
-              >
-                {studio ? "Reset changes" : "Reset form"}
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="h-11 gap-2 rounded-lg px-6 font-semibold shadow-lg shadow-primary/15"
-              >
-                <Check aria-hidden="true" />
-                {isSubmitting
-                  ? studio
-                    ? "Updating..."
-                    : "Adding..."
-                  : studio
-                    ? "Update Studio"
-                    : "Add Studio"}
-              </Button>
-            </div>
-          </div>
+          <FormActions
+            isEditing={Boolean(studio)}
+            isSubmitting={isSubmitting}
+          />
         </form>
       </div>
     </section>

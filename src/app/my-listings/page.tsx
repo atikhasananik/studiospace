@@ -17,13 +17,15 @@ export const metadata: Metadata = createPageMetadata({
 
 export default async function MyListingsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
+  const data = await auth.api.getToken({headers: await headers()})
+  const token = data.token as string
 
   if (!session) {
     redirect("/login?callbackURL=%2Fmy-listings");
   }
 
   const ownerEmail = session.user.email.trim().toLocaleLowerCase();
-  const studios = (await getMyListingsData(ownerEmail)) as IStudio[] | [];
+  const studios = (await getMyListingsData(ownerEmail,token)) as IStudio[] | [];
 
   return <MyListings studios={studios} loadError={studios === null} />;
 }

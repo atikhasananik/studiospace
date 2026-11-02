@@ -8,6 +8,8 @@ import AboutSection from "@/components/home/about/AboutSection";
 import FAQSection from "@/components/home/faq/FAQSection";
 import WhatWeDoSection from "@/components/home/whatWeDo/WhatWeDoSection";
 import { createPageMetadata } from "@/lib/seo";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export const metadata = createPageMetadata({
   title: "Find Creative Studio Spaces for Rent",
@@ -16,7 +18,7 @@ export const metadata = createPageMetadata({
   path: "/",
 });
 
-const HomePage = () => {
+const HomePage = async () => {
   return (
     <>
       <Hero />

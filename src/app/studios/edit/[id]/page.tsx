@@ -30,12 +30,15 @@ export default async function UpdateStudioPage({
   const { id } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
 
+  const data = await auth.api.getToken({headers : await headers()})
+  const token = data.token as string
+
   if (!session) {
     redirect(`/login?callbackURL=${encodeURIComponent(`/studios/edit/${id}`)}`);
   }
 
   const email = session.user.email.trim().toLocaleLowerCase();
-  const listings = normalizeStudios(await getMyListingsData(email));
+  const listings = normalizeStudios(await getMyListingsData(email,token));
   const studio = listings.find(
     (listing) =>
       listing._id === id &&

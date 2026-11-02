@@ -5,11 +5,13 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 export const updateStudioData = async (
   id: string,
   updatedData: TUpdatedData,
+  token: string,
 ) => {
   const res = await fetch(`${API_BASE}/updatestudio/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      authorization: `bearer ${token}`,
     },
     body: JSON.stringify(updatedData),
   });
@@ -29,12 +31,16 @@ export type UpdateBookingStatusResult = { modifiedCount: number } | false;
 export const updatebookingstatus = async (
   id: string,
   updatedData: "confirmed" | "completed" | "cancelled",
+  token: string,
 ): Promise<UpdateBookingStatusResult> => {
   const res = await fetch(
     `${API_BASE}/updatebookingstatus/${encodeURIComponent(id)}`,
     {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        authorizaton: `bearer ${token}`,
+      },
       body: JSON.stringify({ status: updatedData }),
     },
   );
