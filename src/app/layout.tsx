@@ -5,6 +5,7 @@ import { Footer } from "@/components/common/footer/Footer";
 import { BackToTop } from "@/components/back-to-top/BackToTop";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toast";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,9 +26,55 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "StudioSpace — Dark Kinetic Luxury Creative Studios",
+  metadataBase: SITE_URL,
+  title: {
+    default: "StudioSpace | Creative Studio Spaces for Rent",
+    template: "%s | StudioSpace",
+  },
   description:
-    "Discover and book premier film, photography, podcast, and recording studios equipped for top-tier creators.",
+    "Discover and book creative studio spaces for photography, film, podcasts, music, and production. Find the right space for your next project on StudioSpace.",
+  applicationName: "StudioSpace",
+  keywords: [
+    "creative studio rental",
+    "photography studio rental",
+    "film studio rental",
+    "podcast studio rental",
+    "music recording studio",
+    "production spaces",
+    "creative spaces",
+    "studio booking",
+  ],
+  authors: [{ name: "StudioSpace" }],
+  creator: "StudioSpace",
+  publisher: "StudioSpace",
+  category: "Creative services",
+  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    title: "StudioSpace | Creative Studio Spaces for Rent",
+    description:
+      "Discover and book photography, film, podcast, music, and production studios for your next creative project.",
+    url: "/",
+    siteName: "StudioSpace",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StudioSpace | Creative Studio Spaces for Rent",
+    description:
+      "Find and book the right creative studio for your next project.",
+  },
   icons: {
     icon: "/icon.svg",
   },

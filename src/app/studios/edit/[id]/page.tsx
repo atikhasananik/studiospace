@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
@@ -5,6 +6,14 @@ import { AddStudioForm } from "@/components/addStudioForm/AddStudioForm";
 import { getMyListingsData } from "@/components/data/getData";
 import type { IStudio } from "@/components/type/studio.type";
 import { auth } from "@/lib/auth";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Update Studio Listing",
+  description: "Edit your StudioSpace creative studio listing.",
+  path: "/studios/edit",
+  noIndex: true,
+});
 
 type UpdateStudioPageProps = {
   params: Promise<{ id: string }>;

@@ -1,74 +1,88 @@
-import { Aperture } from "lucide-react";
+import { Aperture, AudioLines, Clapperboard, Mic } from "lucide-react";
 
-function StudioCardSkeleton() {
-  return (
-    <div
-      aria-hidden="true"
-      className="overflow-hidden rounded-2xl border border-border bg-card"
-    >
-      <div className="relative aspect-[16/10] animate-pulse bg-muted">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
-        <Aperture
-          className="absolute left-1/2 top-1/2 size-8 -translate-x-1/2 -translate-y-1/2 text-primary/25"
-          strokeWidth={1.5}
-        />
-        <span className="absolute right-4 top-4 h-6 w-20 rounded-full bg-background/70" />
-      </div>
-      <div className="space-y-4 p-5">
-        <div className="h-3 w-1/4 animate-pulse rounded bg-primary/20" />
-        <div className="h-5 w-3/4 animate-pulse rounded bg-muted" />
-        <div className="h-4 w-1/2 animate-pulse rounded bg-muted" />
-        <div className="flex items-center justify-between border-t border-border pt-4">
-          <div className="h-5 w-20 animate-pulse rounded bg-muted" />
-          <div className="h-9 w-24 animate-pulse rounded-lg bg-primary/15" />
-        </div>
-      </div>
-    </div>
-  );
-}
+const loadingCards = [
+  { icon: Aperture, label: "STUDIO" },
+  { icon: Clapperboard, label: "PRODUCTION" },
+  { icon: Mic, label: "AUDIO" },
+  { icon: AudioLines, label: "CREATIVE" },
+];
 
 export default function Loading() {
   return (
     <section
-      className="relative flex-1 overflow-hidden bg-background py-24 md:py-28"
+      className="relative isolate flex min-h-[calc(100svh-4rem)] flex-1 items-center overflow-hidden bg-background py-20 md:min-h-[calc(100svh-5rem)]"
       aria-busy="true"
-      aria-label="Loading page"
+      aria-label="Loading StudioSpace"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-96 bg-[radial-gradient(ellipse_at_50%_0%,hsl(var(--primary)/0.08),transparent_68%)]"
-      />
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      >
+        <div className="absolute -top-56 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-72 -right-36 size-[32rem] rounded-full bg-accent/5 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.18)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.18)_1px,transparent_1px)] bg-[size:56px_56px] opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_78%)]" />
+      </div>
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-8 border-b border-border pb-8">
-          <p className="font-mono text-xs font-semibold tracking-[0.2em] text-primary">
-            STUDIOSPACE
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="relative mx-auto flex size-20 items-center justify-center">
+            <span className="absolute inset-0 animate-ping rounded-[1.75rem] border border-primary/20 motion-reduce:animate-none" />
+            <span className="absolute inset-2 rounded-2xl border border-accent/25 bg-accent/5" />
+            <Aperture
+              className="relative size-9 animate-spin text-primary motion-reduce:animate-none"
+              strokeWidth={1.4}
+              aria-hidden="true"
+            />
+          </div>
+
+          <p className="mt-7 font-mono text-[10px] font-semibold tracking-[0.24em] text-accent sm:text-xs">
+            STUDIOSPACE / CREATOR WORKSPACE
           </p>
-          <h1 className="mt-3 font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+          <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Setting the <span className="text-primary">scene</span>
           </h1>
           <p
             role="status"
-            className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"
+            className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base"
           >
-            <span className="size-1.5 animate-pulse rounded-full bg-accent" />
-            Loading your creative spaces...
+            Preparing your creative space. This should only take a moment.
           </p>
+
           <div
             aria-hidden="true"
-            className="mt-7 flex flex-wrap items-center gap-3"
+            className="mx-auto mt-8 h-1 w-48 overflow-hidden rounded-full bg-muted"
           >
-            <span className="h-10 w-full animate-pulse rounded-xl border border-border bg-card sm:w-72" />
-            <span className="h-10 w-32 animate-pulse rounded-xl border border-border bg-card" />
-            <span className="h-10 w-28 animate-pulse rounded-xl border border-border bg-card" />
+            <span className="block h-full w-1/2 animate-pulse rounded-full bg-gradient-to-r from-primary to-accent motion-reduce:animate-none" />
           </div>
-        </header>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <StudioCardSkeleton />
-          <StudioCardSkeleton />
-          <StudioCardSkeleton />
         </div>
+
+        <div
+          aria-hidden="true"
+          className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-3 sm:mt-16 sm:grid-cols-4 sm:gap-4"
+        >
+          {loadingCards.map(({ icon: Icon, label }, index) => (
+            <div
+              key={label}
+              className="animate-pulse rounded-2xl border border-border/80 bg-card/70 p-4 backdrop-blur-sm sm:p-5"
+              style={{ animationDelay: `${index * 120}ms` }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-10 items-center justify-center rounded-xl border border-primary/15 bg-primary/5 text-primary/50">
+                  <Icon className="size-4.5" strokeWidth={1.5} />
+                </span>
+                <span className="font-mono text-[9px] tracking-[0.16em] text-muted-foreground/50">
+                  0{index + 1}
+                </span>
+              </div>
+              <div className="mt-5 h-2 w-16 rounded-full bg-muted-foreground/15" />
+              <p className="mt-2 font-mono text-[9px] tracking-[0.15em] text-muted-foreground/40">
+                {label}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="sr-only">Loading page content...</p>
       </div>
     </section>
   );

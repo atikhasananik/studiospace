@@ -1,5 +1,13 @@
 import { getAllData } from "@/components/data/getData";
 import { StudiosExplorer } from "@/components/studios/StudiosExplorer";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Explore Creative Studios",
+  description:
+    "Browse photography studios, film stages, podcast rooms, music suites, and creative workspaces. Compare spaces and find the right studio for your project.",
+  path: "/studios",
+});
 
 type StudiosPageProps = {
   searchParams: Promise<{
