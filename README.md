@@ -41,13 +41,36 @@ The website is the frontend and Next.js application layer. Studio listings and t
 
 ## Tech stack
 
-- **Next.js 16 App Router** and **React 19**
-- **TypeScript**
-- **Tailwind CSS v4** with semantic CSS theme tokens
-- **Base UI** wrappers for shared UI primitives
-- **Better Auth** for sessions and account authentication
-- **MongoDB** for authentication data and the local booking API
-- **Lucide React** for icons
+### Frontend
+
+- **Next.js 16** — App Router, server/client components, route handlers, metadata, and Turbopack
+- **React 19** — interactive UI and client-side state
+- **TypeScript 5** — strict type checking
+- **React Compiler** — enabled through the Next.js configuration
+
+### UI and styling
+
+- **Tailwind CSS v4** — utility-first styling with CSS-based theme tokens
+- **shadcn/ui** — project-owned component patterns, adapted to the Base UI primitives
+- **Base UI** (`@base-ui/react`) — accessible behavior for shared UI components
+- **Lucide React** — interface icons
+- **class-variance-authority**, **clsx**, **cn**, and **tailwind-merge** — component variants and class-name composition
+- **next-themes** — dark/light theme switching
+- **Geist**, **Geist Mono**, and **Syne** — interface and heading fonts via `next/font`
+
+### Authentication and data
+
+- **Better Auth** — email/password authentication, Google sign-in, and session management
+- **MongoDB** — authentication storage and the local booking API
+- **MongoDB Node.js driver** and **`@better-auth/mongo-adapter`** — database connectivity and Better Auth integration
+- **REST API integration with Fetch** — studio listings and the booking UI use the separately deployed StudioSpace API
+
+### Development and quality
+
+- **npm** — dependency and script management
+- **ESLint 9** with **`eslint-config-next`** — linting
+- **TypeScript compiler (`tsc`)** — type checking
+- **Next.js production build** — optimized build and route validation
 
 ## Getting started
 

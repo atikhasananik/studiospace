@@ -11,6 +11,7 @@ import {
   MenuIcon,
   Plus,
   Store,
+  X,
 } from "lucide-react";
 import { cn } from "cn";
 
@@ -321,13 +322,27 @@ export function Navbar() {
 
             <SheetContent
               side="right"
+              showCloseButton={false}
               className="w-3/4 gap-0 border-l border-border bg-background p-0 text-foreground sm:max-w-sm"
             >
-              <SheetHeader className="flex-row items-center justify-between border-b border-border p-4">
+              <SheetHeader className="items-start gap-2 border-b border-border p-4">
                 <SheetTitle className="p-0">
                   <Logo />
                 </SheetTitle>
-                <ThemeToggle />
+                <div className="flex w-full items-center justify-end gap-1">
+                  <ThemeToggle />
+                  <SheetClose
+                    render={
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Close menu"
+                      />
+                    }
+                  >
+                    <X className="size-5" aria-hidden="true" />
+                  </SheetClose>
+                </div>
               </SheetHeader>
 
               <nav aria-label="Mobile" className="flex flex-col gap-1 p-4">
