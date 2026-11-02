@@ -1,31 +1,26 @@
-import { CalendarDays } from "lucide-react";
+import { MapPin } from "lucide-react";
 
-function BookingCardSkeleton() {
+function BookingRowSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="group overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-background/10"
+      className="grid min-w-[760px] grid-cols-[minmax(190px,1.35fr)_minmax(185px,1.25fr)_minmax(80px,0.55fr)_minmax(85px,0.6fr)_minmax(105px,0.7fr)_minmax(110px,0.75fr)] items-center gap-4 border-b border-border px-5 py-5 last:border-b-0"
     >
-      <div className="flex flex-col sm:flex-row">
-        <div className="relative aspect-[16/10] shrink-0 overflow-hidden bg-muted sm:aspect-auto sm:min-h-52 sm:w-44">
-          <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-primary/10 via-muted to-accent/10" />
-          <CalendarDays className="absolute left-1/2 top-1/2 size-9 -translate-x-1/2 -translate-y-1/2 text-primary/20" />
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col gap-5 p-5">
-          <div className="space-y-3">
-            <div className="h-5 w-3/4 animate-pulse rounded-md bg-muted" />
-            <div className="h-4 w-1/2 animate-pulse rounded-md bg-muted" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="h-14 animate-pulse rounded-xl border border-border bg-background/70" />
-            <div className="h-14 animate-pulse rounded-xl border border-border bg-background/70" />
-          </div>
-          <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-            <div className="h-5 w-20 animate-pulse rounded-md bg-muted" />
-            <div className="h-9 w-24 animate-pulse rounded-lg bg-primary/10" />
-          </div>
+      <div className="space-y-2">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+        <div className="flex items-center gap-1.5">
+          <MapPin className="size-3.5 text-primary/30" />
+          <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
         </div>
       </div>
+      <div className="space-y-2">
+        <div className="h-4 w-4/5 animate-pulse rounded bg-muted" />
+        <div className="h-3 w-2/5 animate-pulse rounded bg-muted" />
+      </div>
+      <div className="h-4 w-8 animate-pulse rounded bg-muted" />
+      <div className="h-4 w-14 animate-pulse rounded bg-muted" />
+      <div className="h-6 w-20 animate-pulse rounded-full bg-primary/10" />
+      <div className="ml-auto h-9 w-20 animate-pulse rounded-lg bg-destructive/10" />
     </div>
   );
 }
@@ -43,29 +38,41 @@ export default function MyBookingsLoading() {
       />
       <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mb-10 border-b border-border pb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-card/80 px-3 py-1 font-mono text-xs font-semibold tracking-[0.14em] text-accent">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-accent" />
-            </span>
-            YOUR CREATIVE SCHEDULE
-          </div>
-          <h1 className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-            My <span className="text-primary">bookings</span>
-          </h1>
-          <p
-            role="status"
-            className="mt-3 flex items-center gap-2 text-base text-muted-foreground"
-          >
-            <span className="size-1.5 animate-pulse rounded-full bg-primary" />
-            Gathering your upcoming sessions...
-          </p>
+          <div className="h-6 w-52 animate-pulse rounded-full bg-accent/10" />
+          <div className="mt-4 h-11 w-64 animate-pulse rounded-lg bg-muted" />
+          <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded bg-muted" />
         </header>
 
-        <div className="grid gap-5 lg:grid-cols-2">
-          <BookingCardSkeleton />
-          <BookingCardSkeleton />
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-6 w-40 animate-pulse rounded bg-muted" />
+            <div className="h-4 w-52 animate-pulse rounded bg-muted" />
+          </div>
+          <div className="h-7 w-24 animate-pulse rounded-full border border-primary/15 bg-primary/5" />
         </div>
+
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-background/10">
+          <div
+            aria-hidden="true"
+            className="grid min-w-[760px] grid-cols-[minmax(190px,1.35fr)_minmax(185px,1.25fr)_minmax(80px,0.55fr)_minmax(85px,0.6fr)_minmax(105px,0.7fr)_minmax(110px,0.75fr)] items-center gap-4 border-b border-border bg-muted/50 px-5 py-3"
+          >
+            {[20, 18, 10, 10, 12, 12].map((width, index) => (
+              <div
+                key={index}
+                className="h-3 animate-pulse rounded bg-muted-foreground/15"
+                style={{ width: `${width * 4}px` }}
+              />
+            ))}
+          </div>
+          <div className="overflow-x-auto">
+            <BookingRowSkeleton />
+            <BookingRowSkeleton />
+            <BookingRowSkeleton />
+          </div>
+        </div>
+        <p role="status" className="sr-only">
+          Loading your bookings...
+        </p>
       </div>
     </section>
   );

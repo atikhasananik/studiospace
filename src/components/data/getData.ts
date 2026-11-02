@@ -1,4 +1,4 @@
-import type { IStudio } from "../type/studio.type"
+import type { IStudio } from "../type/studio.type";
 
 /**
  * Backend base URL.
@@ -9,8 +9,7 @@ import type { IStudio } from "../type/studio.type"
  *   at the server's own localhost, where no backend exists, and every
  *   data-driven section silently hides.
  */
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 /**
  * Fetches the top-rated studios from the backend.
@@ -21,80 +20,77 @@ const API_BASE =
  */
 export const getTopRatedData = async (): Promise<IStudio[] | null> => {
   try {
-    const res = await fetch(`${API_BASE}/toprateddata`)
+    const res = await fetch(`${API_BASE}/toprateddata`);
 
     if (!res.ok) {
-      console.warn(`getTopRatedData: API responded with ${res.status}`)
-      return null
+      console.warn(`getTopRatedData: API responded with ${res.status}`);
+      return null;
     }
 
-    const data: unknown = await res.json()
+    const data: unknown = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
-      console.warn("getTopRatedData: unexpected payload shape")
-      return null
+      console.warn("getTopRatedData: unexpected payload shape");
+      return null;
     }
 
-    return data as IStudio[]
+    return data as IStudio[];
   } catch (err) {
     console.warn(
       "getTopRatedData: fetch failed —",
       err instanceof Error ? err.message : err,
-    )
-    return null
+    );
+    return null;
   }
-}
-
+};
 
 export const getAllData = async (
   category?: string,
 ): Promise<IStudio[] | null> => {
   try {
-    const query = category
-      ? `?category=${encodeURIComponent(category)}`
-      : ""
-    const res = await fetch(`${API_BASE}/getalldata${query}`)
+    const query = category ? `?category=${encodeURIComponent(category)}` : "";
+    const res = await fetch(`${API_BASE}/getalldata${query}`);
 
     if (!res.ok) {
-      console.warn(`getAllData: API responded with ${res.status}`)
-      return null
+      console.warn(`getAllData: API responded with ${res.status}`);
+      return null;
     }
 
-    const data: unknown = await res.json()
+    const data: unknown = await res.json();
 
     if (!Array.isArray(data)) {
-      console.warn("getAllData: unexpected payload shape")
-      return null
+      console.warn("getAllData: unexpected payload shape");
+      return null;
     }
 
-    return data as IStudio[]
+    return data as IStudio[];
   } catch (err) {
     console.warn(
       "getAllData: fetch failed —",
       err instanceof Error ? err.message : err,
-    )
-    return null
+    );
+    return null;
   }
-}
+};
 
-
-export const getSingleData = async (id : string) => {
-  const res = await fetch(`${API_BASE}/singlestudio/${id}`)
-  const data = await res.json()
-  return data
-}
-
+export const getSingleData = async (id: string) => {
+  const res = await fetch(`${API_BASE}/singlestudio/${id}`);
+  const data = await res.json();
+  return data;
+};
 
 export const getStudioById = async (id: string): Promise<IStudio | null> => {
   const studios = await getAllData();
   return studios?.find((studio) => studio._id === id) ?? null;
 };
 
-
-
- export const getMyListingsData = async (ownerEmail: string): Promise<IStudio[] | IStudio | null> => {
+export const getMyListingsData = async (
+  ownerEmail: string,
+): Promise<IStudio[] | IStudio | null> => {
   try {
-    const res = await fetch(`${API_BASE}/getmylistings/${encodeURIComponent(ownerEmail)}`);
+    const res = await fetch(
+      `${API_BASE}/getmylistings/${encodeURIComponent(ownerEmail)}`,
+    );
 
     if (!res.ok) {
       console.warn(`getMyListingsData: API responded with ${res.status}`);
@@ -102,8 +98,6 @@ export const getStudioById = async (id: string): Promise<IStudio | null> => {
     }
 
     const data: unknown = await res.json();
-
-
 
     return data as IStudio[] | IStudio;
   } catch (err) {
@@ -113,27 +107,33 @@ export const getStudioById = async (id: string): Promise<IStudio | null> => {
     );
     return null;
   }
-}
-
-
+};
 
 export const getMyBookingsData = async (email: string): Promise<unknown> => {
- const res = await fetch(
-   `${API_BASE}/mybookings/${encodeURIComponent(email)}`,
-   { cache: "no-store" },
- );
- const data: unknown = await res.json();
+  const res = await fetch(
+    `${API_BASE}/mybookings/${encodeURIComponent(email)}`,
+    { cache: "no-store" },
+  );
+  const data: unknown = await res.json();
 
- if (!res.ok) {
-   const message =
-     typeof data === "object" &&
-     data !== null &&
-     "error" in data &&
-     typeof data.error === "string"
-       ? data.error
-       : "Unable to load your bookings.";
-   throw new Error(message);
- }
+  if (!res.ok) {
+    return []
+  }
 
- return data;
-}
+  return data;
+};
+
+
+export const getMyOrdersData = async (email: string): Promise<unknown> => {
+  const res = await fetch(
+    `${API_BASE}/myorders/${encodeURIComponent(email)}`,
+    { cache: "no-store" },
+  );
+
+  if (!res.ok) {
+    console.warn(`getMyOrdersData: API responded with ${res.status}`);
+    throw new Error("Unable to load incoming orders. Please try again.");
+  }
+
+  return (await res.json()) as unknown;
+};

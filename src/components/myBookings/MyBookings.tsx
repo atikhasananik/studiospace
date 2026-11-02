@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { CalendarDays, Clock3, MapPin, Users } from "lucide-react";
+import {
+  CalendarDays,
+  Clock3,
+  MapPin,
+  Users,
+} from "lucide-react";
 
 import type { BookingStatus } from "@/components/type/booking.type";
 import { Badge } from "@/components/ui/badge";
@@ -50,19 +55,15 @@ function isBookingRow(value: unknown): value is BookingRow {
   );
 }
 
-function isBookingRowArray(value: unknown): value is BookingRow[] {
-  return Array.isArray(value) && value.every(isBookingRow);
-}
-
 function normalizeStatus(status: string): BookingStatus | null {
-  const normalized = status.trim().toLowerCase();
-  switch (normalized) {
+  switch (status.trim().toLowerCase()) {
     case "pending":
       return "Pending";
     case "confirmed":
       return "Confirmed";
     case "completed":
       return "Completed";
+    case "cancelled":
     case "canceled":
       return "Cancelled";
     default:
@@ -96,7 +97,7 @@ export default async function MyBookings({ email }: { email: string }) {
 
   try {
     const response: unknown = await getMyBookingsData(email);
-    if (!isBookingRowArray(response)) {
+    if (!Array.isArray(response) || !response.every(isBookingRow)) {
       throw new Error("The booking service returned an unexpected response.");
     }
     bookings = response;
@@ -214,10 +215,7 @@ export default async function MyBookings({ email }: { email: string }) {
                 </TableHeader>
                 <TableBody>
                   {bookings.map((booking) => {
-                    const status =
-                      typeof booking.status === "string"
-                        ? normalizeStatus(booking.status)
-                        : null;
+                    const status = normalizeStatus(booking.status);
 
                     return (
                       <TableRow key={booking._id} className="group">

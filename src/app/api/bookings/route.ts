@@ -194,33 +194,62 @@ export async function PATCH(request: Request) {
 
   const payload = payloadValue as Record<string, unknown>;
   if (
-    payload.action !== "cancel" ||
+    !["cancel", "confirmed", "completed", "cancelled"].includes(
+      String(payload.action),
+    ) ||
     typeof payload.bookingId !== "string" ||
     !ObjectId.isValid(payload.bookingId)
   ) {
-    return Response.json({ error: "Invalid cancellation request." }, { status: 400 });
+    return Response.json(
+      { error: "Invalid booking status request." },
+      { status: 400 },
+    );
   }
 
   try {
+    const email = session.user.email.trim().toLocaleLowerCase();
+    const bookingId = new ObjectId(payload.bookingId);
+    const action = payload.action;
+    const isHostAction =
+      action === "confirmed" || action === "completed" || action === "cancelled";
+    const fromStatuses =
+      action === "confirmed"
+        ? ["Pending"]
+        : action === "completed"
+          ? ["Confirmed"]
+          : action === "cancelled"
+            ? ["Pending", "Confirmed"]
+            : ["Pending"];
+
     const result = await bookings.updateOne(
       {
-        _id: new ObjectId(payload.bookingId),
-        guestEmail: session.user.email.trim().toLocaleLowerCase(),
-        status: "Pending",
+        _id: bookingId,
+        ...(isHostAction ? { ownerEmail: email } : { guestEmail: email }),
+        status: { $in: fromStatuses },
       },
       {
-        $set: { status: "Cancelled", cancelledAt: new Date() },
+        $set: {
+          status: action === "cancel" ? "Cancelled" : action,
+          ...(action === "cancel" || action === "cancelled"
+            ? { cancelledAt: new Date() }
+            : {}),
+          ...(action === "completed" ? { completedAt: new Date() } : {}),
+        },
       },
     );
 
     if (result.matchedCount === 0) {
       return Response.json(
-        { error: "Pending booking not found for this account." },
+        {
+          error: isHostAction
+            ? "Order not found or it is no longer in the required status."
+            : "Pending booking not found for this account.",
+        },
         { status: 404 },
       );
     }
 
-    return Response.json({ success: true });
+    return Response.json({ success: true, modifiedCount: result.modifiedCount });
   } catch (error) {
     console.error("PATCH /api/bookings failed:", error);
     return Response.json(

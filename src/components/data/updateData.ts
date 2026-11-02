@@ -28,15 +28,16 @@ export type UpdateBookingStatusResult = { modifiedCount: number } | false;
 
 export const updatebookingstatus = async (
   id: string,
-  updatedData: "cancelled",
+  updatedData: "confirmed" | "completed" | "cancelled",
 ): Promise<UpdateBookingStatusResult> => {
-  const res = await fetch(`${API_BASE}/updatebookingstatus/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
+  const res = await fetch(
+    `${API_BASE}/updatebookingstatus/${encodeURIComponent(id)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: updatedData }),
     },
-    body: JSON.stringify({ status: updatedData }),
-  });
+  );
 
   if (!res.ok) {
     console.warn(`updatebookingstatus: API responded with ${res.status}`);
@@ -51,6 +52,24 @@ export const updatebookingstatus = async (
     typeof data.modifiedCount === "number"
   ) {
     return { modifiedCount: data.modifiedCount };
+  }
+
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "matchedCount" in data &&
+    typeof data.matchedCount === "number"
+  ) {
+    return { modifiedCount: data.matchedCount };
+  }
+
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "success" in data &&
+    data.success === true
+  ) {
+    return { modifiedCount: 1 };
   }
 
   throw new Error("The booking service returned an unexpected response.");
