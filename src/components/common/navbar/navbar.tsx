@@ -45,6 +45,7 @@ const routes = [
   { href: "/studios", label: "Explore Studios" },
   { href: "/#how-it-works", label: "How It Works" },
   { href: "/#about", label: "About Us" },
+  { href: "/contact", label: "Contact" },
 ] as const;
 
 const accountLinks = [
