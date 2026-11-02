@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  CalendarDays,
-  Inbox,
-  MapPin,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, CalendarDays, Inbox, MapPin, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,8 +47,6 @@ export function IncomingOrders({
   pendingCount,
   loadError,
 }: IncomingOrdersProps) {
-
-  console.log(orders)
   return (
     <section
       aria-labelledby="incoming-orders-heading"
@@ -194,8 +186,8 @@ export function IncomingOrders({
         {!loadError && orders.length > 0 && (
           <div className="flex flex-col gap-3 border-t border-border bg-muted/20 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p className="text-xs text-muted-foreground">
-              {orders.length} active{" "}
-              {orders.length === 1 ? "order" : "orders"} in your host workspace
+              {orders.length} active {orders.length === 1 ? "order" : "orders"}{" "}
+              in your host workspace
             </p>
             <Button
               nativeButton={false}

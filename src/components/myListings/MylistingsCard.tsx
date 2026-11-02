@@ -22,6 +22,7 @@ import { toast } from "@/components/ui/toast";
 import { deleteStudioData } from "../data/deleteData";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
   const [studio] = useState(initialStudio);
@@ -31,8 +32,10 @@ const MylistingsCard = ({ studio: initialStudio }: { studio: IStudio }) => {
 
   const handleDelete = async () => {
     setIsDeleting(true);
+    const {data,error} = await authClient.token()
+    const token = data?.token as string
     try {
-      const result = await deleteStudioData(studio._id);
+      const result = await deleteStudioData(studio._id,token);
       if (!result) {
         toast.add({
           title: "Studio deletion failed",

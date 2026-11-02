@@ -39,7 +39,7 @@ export const updatebookingstatus = async (
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        authorizaton: `bearer ${token}`,
+        authorization: `bearer ${token}`,
       },
       body: JSON.stringify({ status: updatedData }),
     },

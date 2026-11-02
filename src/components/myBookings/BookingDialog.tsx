@@ -66,7 +66,7 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
     
     const {data, error} = await authClient.token()
     const token = data?.token as string
-
+    
     const bookedby = session?.user.email ?? "";
 
     const bookingData = {
@@ -80,8 +80,9 @@ export function BookingDialog({ studio }: { studio: IStudio }) {
       guestCount,
       status: "pending",
     } as IBookingData;
-
+    
     try {
+    
       const response= await postBookingData(bookedby, bookingData,token);
 
       if (!isBookingAcknowledged(response)) {

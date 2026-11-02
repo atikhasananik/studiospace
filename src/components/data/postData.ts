@@ -17,11 +17,12 @@ export const postStudioData = async (data: Record<string, unknown>,token:string)
 };
 
 export const postBookingData = async (email: string, data: IBookingData,token:string) => {
+
   const res = await fetch(`${API_BASE}/addbooking/${email}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      authorizaton: `bearer ${token}`
+      authorization: `bearer ${token}`
     },
     body: JSON.stringify(data),
   });
