@@ -53,6 +53,8 @@ export function IncomingOrders({
   pendingCount,
   loadError,
 }: IncomingOrdersProps) {
+
+  console.log(orders)
   return (
     <section
       aria-labelledby="incoming-orders-heading"

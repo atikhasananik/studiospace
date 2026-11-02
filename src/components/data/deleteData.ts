@@ -1,13 +1,8 @@
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
-
-
-
-export const deleteStudioData = async (id : string) => {
-
-console.log(id)    
-const res = await fetch(`${API_BASE}/deletestudio/${id}`, {
+export const deleteStudioData = async (id: string) => {
+  console.log(id);
+  const res = await fetch(`${API_BASE}/deletestudio/${id}`, {
     method: "DELETE",
   });
 
@@ -18,6 +13,5 @@ const res = await fetch(`${API_BASE}/deletestudio/${id}`, {
 
   const data: unknown = await res.json();
 
-  return data;  
-  
-}
+  return data;
+};

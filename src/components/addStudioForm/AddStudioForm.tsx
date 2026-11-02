@@ -163,8 +163,6 @@ export function AddStudioForm({ user, studio }: AddStudioFormProps) {
           amenities,
           hostEmail: user.email,
           hostName: user.name,
-          ownerEmail: user.email,
-          ownerName: user.name,
         };
         const result = await postStudioData(payload);
         if (!result?.acknowledged) {

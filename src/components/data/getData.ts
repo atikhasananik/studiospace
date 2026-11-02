@@ -9,7 +9,7 @@ import type { IStudio } from "../type/studio.type";
  *   at the server's own localhost, where no backend exists, and every
  *   data-driven section silently hides.
  */
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * Fetches the top-rated studios from the backend.
@@ -117,18 +117,16 @@ export const getMyBookingsData = async (email: string): Promise<unknown> => {
   const data: unknown = await res.json();
 
   if (!res.ok) {
-    return []
+    return [];
   }
 
   return data;
 };
 
-
 export const getMyOrdersData = async (email: string): Promise<unknown> => {
-  const res = await fetch(
-    `${API_BASE}/myorders/${encodeURIComponent(email)}`,
-    { cache: "no-store" },
-  );
+  const res = await fetch(`${API_BASE}/myorders/${encodeURIComponent(email)}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     console.warn(`getMyOrdersData: API responded with ${res.status}`);
