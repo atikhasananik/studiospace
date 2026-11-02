@@ -49,7 +49,11 @@ export const getAllData = async (
 ): Promise<IStudio[] | null> => {
   try {
     const query = category ? `?category=${encodeURIComponent(category)}` : "";
-    const res = await fetch(`${API_BASE}/getalldata${query}`);
+    const res = await fetch(`${API_BASE}/getalldata${query}`, {
+      next: {
+        revalidate: 60,
+      },
+    });
 
     if (!res.ok) {
       console.warn(`getAllData: API responded with ${res.status}`);
@@ -129,7 +133,6 @@ export const getMyBookingsData = async (
   );
   const data: unknown = await res.json();
 
-
   if (!res.ok) {
     return [];
   }
@@ -152,7 +155,7 @@ export const getMyOrdersData = async (
     throw new Error("Unable to load incoming orders. Please try again.");
   }
 
-  const data : unknown = await res.json()
+  const data: unknown = await res.json();
 
-  return data
+  return data;
 };
