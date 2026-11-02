@@ -57,8 +57,38 @@ const accountLinks = [
 
 function useIsActive() {
   const pathname = usePathname();
-  return (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    window.addEventListener("popstate", syncHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncHash);
+      window.removeEventListener("popstate", syncHash);
+    };
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    const [routePath, routeHash] = href.split("#");
+
+    if (routeHash) {
+      return pathname === (routePath || "/") && hash === `#${routeHash}`;
+    }
+
+    return href === "/"
+      ? pathname === "/" && !hash
+      : pathname.startsWith(href);
+  };
+
+  const handleRouteClick = (href: string) => {
+    const hashIndex = href.indexOf("#");
+    setHash(hashIndex === -1 ? "" : href.slice(hashIndex));
+  };
+
+  return { isActive, handleRouteClick };
 }
 
 function Logo({ className }: { className?: string }) {
@@ -94,7 +124,7 @@ function LiveDot() {
 }
 
 export function Navbar() {
-  const isActive = useIsActive();
+  const { isActive, handleRouteClick } = useIsActive();
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const [logoutError, setLogoutError] = useState("");
@@ -183,6 +213,7 @@ export function Navbar() {
               <Link
                 key={route.href}
                 href={route.href}
+                onClick={() => handleRouteClick(route.href)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative px-3 py-2 text-sm font-medium transition-colors",
@@ -353,7 +384,12 @@ export function Navbar() {
                     <SheetClose
                       key={route.href}
                       nativeButton={false}
-                      render={<Link href={route.href} />}
+                      render={
+                        <Link
+                          href={route.href}
+                          onClick={() => handleRouteClick(route.href)}
+                        />
+                      }
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
