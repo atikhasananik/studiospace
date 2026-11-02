@@ -79,7 +79,7 @@ export default function AboutSection() {
           </Button>
         </div>
 
-        <div className="relative rounded-2xl border border-border bg-card/60 p-5 shadow-xl shadow-background/10 backdrop-blur-sm sm:p-7">
+        <div className="scroll-reveal-side relative rounded-2xl border border-border bg-card/60 p-5 shadow-xl shadow-background/10 backdrop-blur-sm sm:p-7">
           <div className="mb-5 flex items-center justify-between border-b border-border/80 pb-5">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -96,7 +96,10 @@ export default function AboutSection() {
 
           <ul className="divide-y divide-border/70">
             {CREATIVE_SPACES.map(({ label, detail, icon: Icon }, index) => (
-              <li key={label} className="flex items-start gap-4 py-4 first:pt-1">
+              <li
+                key={label}
+                className="scroll-reveal flex items-start gap-4 py-4 first:pt-1"
+              >
                 <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-primary">
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>

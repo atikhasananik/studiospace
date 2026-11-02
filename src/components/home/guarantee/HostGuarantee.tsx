@@ -108,7 +108,7 @@ const HostGuarantee = () => {
             return (
               <div
                 key={assurance.title}
-                className="group flex flex-col rounded-xl border border-border bg-card/40 p-6 shadow-sm transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10 hover:ring-1 hover:ring-primary/30"
+                className="scroll-reveal group flex flex-col rounded-xl border border-border bg-card/40 p-6 shadow-sm transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/10 hover:ring-1 hover:ring-primary/30"
               >
                 {/* Hairline icon puck */}
                 <span className="inline-flex size-11 items-center justify-center rounded-lg border border-border bg-card text-primary transition-colors duration-300 group-hover:border-primary/40 group-hover:bg-primary/10">

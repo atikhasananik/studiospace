@@ -86,7 +86,7 @@ export default function WhatWeDoSection() {
           {SERVICES.map(({ number, title, description, icon: Icon, audience }) => (
             <article
               key={number}
-              className="group relative flex min-h-64 flex-col overflow-hidden rounded-2xl border border-border bg-card/55 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-card hover:shadow-xl hover:shadow-primary/5"
+              className="scroll-reveal group relative flex min-h-64 flex-col overflow-hidden rounded-2xl border border-border bg-card/55 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:bg-card hover:shadow-xl hover:shadow-primary/5"
             >
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-semibold tracking-[0.18em] text-muted-foreground/70">

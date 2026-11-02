@@ -15,6 +15,11 @@ html.light {
   color-scheme: light;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 html.light .site-navbar {
   background-color: hsl(0 0% 100%) !important;
 }
@@ -165,6 +170,69 @@ html.light .site-navbar {
 
   body {
     @apply bg-background text-foreground antialiased;
+  }
+}
+
+@keyframes studio-section-reveal {
+  from {
+    opacity: 0.55;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes studio-card-reveal {
+  from {
+    opacity: 0.2;
+    translate: 0 36px;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes studio-panel-reveal {
+  from {
+    opacity: 0.35;
+    translate: 32px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    main > section:not(.hero-dark) {
+      animation: studio-section-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+
+    .scroll-reveal {
+      animation: studio-card-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+
+    .scroll-reveal-side {
+      animation: studio-panel-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 

@@ -54,7 +54,7 @@ const FeaturedSection = async () => {
           {topStudios.map((studio) => (
             <Card
               key={studio._id}
-              className="group h-full flex-col gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:ring-primary/40"
+              className="scroll-reveal group h-full flex-col gap-0 overflow-hidden rounded-xl border border-border bg-card py-0 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:ring-primary/40"
             >
               {/* 16:10 image with hover zoom + live badge */}
               <div className="relative aspect-[16/10] w-full overflow-hidden">
