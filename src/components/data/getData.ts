@@ -114,3 +114,26 @@ export const getStudioById = async (id: string): Promise<IStudio | null> => {
     return null;
   }
 }
+
+
+
+export const getMyBookingsData = async (email: string): Promise<unknown> => {
+ const res = await fetch(
+   `${API_BASE}/mybookings/${encodeURIComponent(email)}`,
+   { cache: "no-store" },
+ );
+ const data: unknown = await res.json();
+
+ if (!res.ok) {
+   const message =
+     typeof data === "object" &&
+     data !== null &&
+     "error" in data &&
+     typeof data.error === "string"
+       ? data.error
+       : "Unable to load your bookings.";
+   throw new Error(message);
+ }
+
+ return data;
+}

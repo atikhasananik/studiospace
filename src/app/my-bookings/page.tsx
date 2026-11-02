@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { MyBookings } from "@/components/myBookings/MyBookings";
 import { auth } from "@/lib/auth";
+import MyBookings from "@/components/myBookings/MyBookings";
 
 export default async function MyBookingsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -11,5 +11,5 @@ export default async function MyBookingsPage() {
     redirect("/login?callbackURL=%2Fmy-bookings");
   }
 
-  return <MyBookings />;
+  return <MyBookings email={session.user.email} />;
 }
