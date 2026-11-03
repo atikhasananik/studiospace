@@ -10,38 +10,39 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # StudioSpace
 
-Studio discovery/booking site ("Dark Kinetic Luxury" aesthetic). Next.js 16 App Router + React 19 + Tailwind v4.
+Studio discovery/booking site ("Dark Kinetic Luxury" aesthetic). Next.js 16 App Router + React 19 + Tailwind v4. `README.md` is now a real project guide (routes, env vars, external API endpoints, deployment) — use it for setup details instead of assuming create-next-app defaults.
 
 ## Commands
 
-- `npm run dev` — Turbopack dev server on localhost:3000
-- `npm run lint` — ESLint flat config (`eslint.config.mjs`)
-- No test suite exists. Verification = `npm run lint` + `npx tsc --noEmit` + `npm run build` (also Turbopack).
+- `npm run dev` — Turbopack dev server at http://localhost:3000.
+- `npm run lint` — ESLint flat config (`eslint.config.mjs`); currently exits 0 with unused-variable warnings.
+- `npx tsc --noEmit` — type check.
+- `npm run build` — production build (Turbopack); `npm run start` serves it.
+- No automated tests. Verify changes with lint + `tsc` + build.
 
 ## Architecture
 
-- Home page (`src/app/page.tsx`) composes sections from `src/components/home/` (`hero/`, `feature/`, `category/`, `howBookingWork/`, `guarantee/`). Edit those, not `page.tsx`.
-- Global layout (`src/app/layout.tsx`) wires `Navbar` (`src/components/navbar.tsx`), `ThemeProvider` (`next-themes`), and Geist + Syne fonts.
-- `src/components/data/` and `src/components/type/studio.type.ts` (`IStudio`) hold shared data/typing for the app; UI primitives live in `src/components/ui/`.
+- `src/app/` is the App Router tree. `src/app/page.tsx` only composes homepage sections from `src/components/home/` (`hero/`, `feature/`, `category/`, `howBookingWork/`, `guarantee/`, `about/`, `faq/`, `whatWeDo/`); edit those sections.
+- `src/app/layout.tsx` wires fonts, `Navbar` (`src/components/common/navbar/navbar.tsx`), `Footer`, `ThemeProvider`, Base UI `Toaster`, and `BackToTop`.
+- `src/proxy.ts` is Next 16's replacement for `middleware.ts`; it redirects unauthenticated users for the routes in its matcher. Protected pages also call `auth.api.getSession()` server-side — when adding a protected route, update both the matcher and the page guard.
+- Auth is Better Auth + MongoDB (`src/lib/auth.ts`); the browser client is `src/lib/auth-client.ts`. Client mutations call `authClient.token()` and send `authorization: bearer <token>` to the external API.
+- `src/components/data/*` calls the separately hosted API at `NEXT_PUBLIC_API_URL` (endpoint list in README). Helpers deliberately return `null`/`[]` on failure, so pages can look empty instead of crashing.
+- Booking has two backends: the booking dialog/dashboard helpers use the external API; `src/app/api/bookings/route.ts` is a separate session-authenticated MongoDB implementation. Don't assume they share data (README explains).
+- Shared domain types live in `src/components/type/`; `IStudio` accepts both `hostEmail`/`hostName` and `ownerEmail`/`ownerName` because external payloads vary.
 
-## shadcn is NOT the default shadcn
+## UI / styling
 
-- `components.json` sets style `base-nova`: UI primitives come from **`@base-ui/react`**, not Radix (the few `@radix-ui/*` deps in package.json are leftovers — don't build on them).
-- Always import UI components via `@/components/ui/*` (e.g. `Button` from `@/components/ui/button`); the wrapper components (like `button.tsx`) import from `@base-ui/react` internally — do not skip that layer.
-- Class helper: `import { cn } from "cn"` (the `cn` npm package). The `@/lib/utils` alias in `components.json` is misleading — `src/lib/` does not exist.
-- Base shadcn styling comes from `@import "shadcn/tailwind.css"` in `src/app/globals.css`. There is no `tailwind.config` — theme is pure CSS variables, Tailwind v4 style.
-
-## Design specs are mandatory reading
-
-Build any UI/visual component against `brand_identity_visual_strategy.md` and `color_palette_system.md`:
-
-- Dark mode is the default base (Light mode is secondary).
-- Every UI component must be theme-aware — use only semantic tokens (`bg-background`, `text-foreground`, …) that resolve via the `.light`/`.dark` class on `<html>` (next-themes). Never hardcode colors or re-declare token values on a scope: a previous `.hero-force-dark` override that pinned the hero to dark was removed precisely because it ignored the theme toggle.
-- Primary = Electric Amber `#FF4D00` (HSL `18 100% 50%`), accent/live = Neon Pulse Cyan `#00F2FE`, background = Void Obsidian `#090A0F`.
-- Tokens use space-separated HSL channels (no `hsl()` wrapper, no oklch) in `globals.css` — follow that exact format when defining theme variables.
+- shadcn here is style `base-nova` using **`@base-ui/react`**, not Radix. Ignore leftover `@radix-ui/*` deps. Import wrappers from `@/components/ui/*`; use Base UI's `render={<Link ... />}` prop, not Radix `asChild`.
+- Class helper: `import { cn } from "cn"` (the `cn` package). The `@/lib/utils` alias in `components.json` points to a file that does not exist.
+- Tailwind v4 with no `tailwind.config`; tokens are space-separated HSL channels in `src/app/globals.css`. Use semantic utilities (`bg-background`, `text-foreground`, `text-primary`, `bg-card`, ...), not hardcoded colors.
+- `next-themes` uses the `.dark`/`.light` class on `<html>`, dark by default. The only intentional scoped token override is `.hero-dark` (hero stays dark in both themes); don't add more overrides.
+- Read `brand_identity_visual_strategy.md` and `color_palette_system.md` for the visual language, but their code snippets are stale (Radix/`tailwind.config`). Authoritative palette: Electric Amber primary `#FF4D00`, Neon Pulse Cyan accent `#00F2FE`, Void Obsidian background `#090A0F`. Headings use `font-heading` (Syne).
+- User feedback uses `toast` from `@/components/ui/toast` (Base UI toast manager); there is no sonner.
 
 ## Gotchas
 
-- **React Compiler is enabled** (`reactCompiler: true` in `next.config.ts`). Write plain idiomatic React — hand-rolled `useMemo`/`React.memo` memoization is unnecessary.
-- `next/image` accepts **any** https remote host (`remotePatterns: hostname: "**"`) — remote images work without config changes.
-- README.md is untouched create-next-app boilerplate; nothing in it is project-specific.
+- **React Compiler is enabled** (`reactCompiler: true` in `next.config.ts`). Write plain idiomatic React; manual `useMemo`/`React.memo` memoization is unnecessary.
+- Next 16 request APIs are async: `params` and `searchParams` are Promises — `await` them (see `src/app/studios/page.tsx`).
+- `NEXT_PUBLIC_API_URL` is required in practice; helpers use it directly. The `localhost:8000` fallback mentioned in comments/README is not implemented.
+- `next/image` accepts any HTTPS host (`remotePatterns: hostname: "**"`), so remote images need no config changes.
+- `.env*` is gitignored. README documents required variables; auth/runtime needs `MONGODB_URI`, external data needs `NEXT_PUBLIC_API_URL`.
