@@ -52,7 +52,7 @@ export function StudiosExplorer({
   return (
     <section
       aria-labelledby="studios-heading"
-      className="bg-background py-12 md:py-16 lg:py-20"
+      className="bg-background py-16 lg:py-20"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
