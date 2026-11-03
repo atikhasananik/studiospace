@@ -469,21 +469,29 @@ export function Navbar() {
                   </>
                 ) : !isPending ? (
                   <>
-                    <Button
-                      nativeButton={false}
-                      variant="outline"
-                      render={<Link href="/login" />}
-                      className="w-full rounded-xl border-border text-foreground hover:bg-secondary"
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      nativeButton={false}
-                      render={<Link href="/register" />}
-                      className="w-full rounded-xl bg-primary font-semibold text-primary-foreground shadow-lg shadow-orange-500/10 transition-all hover:bg-primary/90 active:scale-95"
-                    >
-                      Register
-                    </Button>
+                    <SheetClose
+                      render={
+                        <Button
+                          nativeButton={false}
+                          variant="outline"
+                          render={<Link href="/login" />}
+                          className="w-full rounded-xl border-border text-foreground hover:bg-secondary"
+                        >
+                          Login
+                        </Button>
+                      }
+                    />
+                    <SheetClose
+                      render={
+                        <Button
+                          nativeButton={false}
+                          render={<Link href="/register" />}
+                          className="w-full rounded-xl bg-primary font-semibold text-primary-foreground shadow-lg shadow-orange-500/10 transition-all hover:bg-primary/90 active:scale-95"
+                        >
+                          Register
+                        </Button>
+                      }
+                    />
                   </>
                 ) : (
                   <span className="h-20 animate-pulse rounded-xl bg-muted" />
