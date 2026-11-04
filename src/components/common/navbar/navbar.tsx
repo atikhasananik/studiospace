@@ -78,9 +78,7 @@ function useIsActive() {
       return pathname === (routePath || "/") && hash === `#${routeHash}`;
     }
 
-    return href === "/"
-      ? pathname === "/" && !hash
-      : pathname.startsWith(href);
+    return href === "/" ? pathname === "/" && !hash : pathname.startsWith(href);
   };
 
   const handleRouteClick = (href: string) => {
@@ -307,7 +305,7 @@ export function Navbar() {
                     className="cursor-pointer gap-2.5 px-2 py-2 text-destructive focus:text-destructive"
                   >
                     <LogOut className="size-4" />
-                    {isLoggingOut ? "Signing out…" : "Sign out"}
+                    {isLoggingOut ? "Loging out…" : "Log out"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -456,16 +454,18 @@ export function Navbar() {
                         {logoutError}
                       </p>
                     )}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleLogout}
-                      disabled={isLoggingOut}
-                      className="mt-2 w-full justify-start gap-2 rounded-xl border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <LogOut className="size-4" />
-                      {isLoggingOut ? "Signing out…" : "Sign out"}
-                    </Button>
+                    <SheetClose>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleLogout}
+                        disabled={isLoggingOut}
+                        className="mt-2 w-full justify-start gap-2 rounded-xl border-border text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <LogOut className="size-4" />
+                        {isLoggingOut ? "Loging out…" : "Log out"}
+                      </Button>
+                    </SheetClose>
                   </>
                 ) : !isPending ? (
                   <>
